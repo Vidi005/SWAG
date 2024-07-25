@@ -1,0 +1,9 @@
+{
+    "routes": [
+        {
+            "src": "/(?!sitemap\\.xml$)[^.]+",
+            "dest": "/",
+            "status": 200
+        }
+    ]
+}
