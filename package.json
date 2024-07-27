@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.16.0",
     "@headlessui/react": "1.7.x",
     "@headlessui/tailwindcss": "^0.2.1",
     "@vitejs/plugin-legacy": "^5.4.1",
