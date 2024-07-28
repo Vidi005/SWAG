@@ -19,3 +19,14 @@
         @apply text-base font-bold
     }
 }
+
+@keyframes shimmer {
+    0%, 50% {
+        transform: translateX(0%);
+        opacity: 0;
+    }
+    100%, 50% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}

@@ -31,14 +31,14 @@ class MainContainer extends React.Component {
   
   async postPrompt(model, userPrompt) {
     const { totalTokens } = await model.countTokens(`${userPrompt}. ${this.state.filteredPrompt}`)
-    if (totalTokens > 5000) {
+    if (totalTokens > 10000) {
       this.setState({
         responseResult: 'The prompt is too long. Please try again.',
         isLoading: false
       })
     } else {
       this.setState({ lastPrompt: userPrompt })
-      const result = await model.generateContentStream(`${userPrompt}. ${this.state.filteredPrompt}`)
+      const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`)
       let text = ''
       for await (const chunk of result.stream) {
         const chunkText = chunk.text()
@@ -49,7 +49,7 @@ class MainContainer extends React.Component {
   }
 
   generatePrompt() {
-    this.setState({ isLoading: true, lastPrompt: '' })
+    this.setState({ isLoading: true, lastPrompt: '', isEditing: false })
     const safetySettings = [
       {
         category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,

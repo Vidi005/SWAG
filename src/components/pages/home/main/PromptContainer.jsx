@@ -10,10 +10,10 @@ const PromptContainer = ({ state, handleCurrentPromptChange, handleLastPromptCha
           state.isEditing
             ? (
                 <div className="flex flex-col items-end justify-end w-full mr-24 duration-200">
-                  <textarea onChange={handleLastPromptChange} rows="3" className="max-h-full w-4/5 border border-cyan-900 dark:border-none bg-cyan-100 dark:bg-gray-700 p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 overflow-y-auto rounded-md">{state.lastPrompt}</textarea>
+                  <textarea onChange={handleLastPromptChange} rows="3" value={state.lastPrompt} className="max-h-full w-4/5 border border-cyan-900 dark:border-none bg-cyan-100 dark:bg-gray-700 p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 overflow-y-auto rounded-md" required></textarea>
                   <span className="flex pt-1 items-center text-cyan-900 dark:text-white">
                     <button className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 active:bg-gray-500 dark:hover:bg-gray-900 dark:active:bg-gray-500 mr-3 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={onCancelHandler}>Cancel</button>
-                    <button className="bg-cyan-300 dark:bg-cyan-700 hover:bg-cyan-500 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={regeneratePrompt}>Regenerate</button>
+                    <button className="bg-cyan-300 dark:bg-cyan-700 hover:bg-cyan-500 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={regeneratePrompt} disabled={state.isLoading || state.lastPrompt.length < 1}>Regenerate</button>
                   </span>
                 </div>
               )
@@ -28,8 +28,8 @@ const PromptContainer = ({ state, handleCurrentPromptChange, handleLastPromptCha
         }
         <br />
         <div className="flex items-center justify-between w-full">
-          <textarea onChange={handleCurrentPromptChange} rows="3" className="grow border border-cyan-700 dark:border-gray-200 bg-white dark:bg-black w-full p-2 text-black dark:text-white rounded-md md:rounded-lg duration-200">{state.currentPrompt}</textarea>
-          <button className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 ml-2 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={generatePrompt} disabled={state.isLoading}>
+          <textarea onChange={handleCurrentPromptChange} value={state.currentPrompt} rows="3" className="grow border border-cyan-700 dark:border-gray-200 bg-white dark:bg-black w-full p-2 text-black dark:text-white rounded-md md:rounded-lg duration-200" required></textarea>
+          <button className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 ml-2 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={generatePrompt} disabled={state.isLoading || state.currentPrompt.length < 1}>
             {state.isLoading
             ? <div className="border-x-2 border-x-white w-8 h-8 aspect-square animate-spin rounded-full"></div>
             : <img className="object-contain w-8" src={`${import.meta.env.BASE_URL}images/post-icon.svg`} alt="Generate" />}
