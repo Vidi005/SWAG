@@ -3,6 +3,7 @@ import UserDataEntry from "../pop_up/UserDataEntry"
 import PromptContainer from "./PromptContainer"
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai"
 import PreviewContainer from "./PreviewContainer"
+import Swal from "sweetalert2"
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class MainContainer extends React.Component {
       isEditing: false,
       currentPrompt: '',
       lastPrompt: '',
+      imgFile: null,
       filteredPrompt: 'Create a single HTML file without any backend code. If using front-end web libraries, import them only from a CDN and write the code within the <script> tag. If using native CSS, include it as inline CSS within the HTML code. If using JavaScript, write it as inline JavaScript within the HTML code. Provide only the complete HTML code without any additional explanations or descriptions.',
       responseResult: '',
       userChatData: null
@@ -28,6 +30,44 @@ class MainContainer extends React.Component {
   handleLastPromptChange(event) {
     this.setState({ lastPrompt: event.target.value })
   }
+
+  pickImage(imgFiles) {
+    if (imgFiles.length === 0) return
+    const file = imgFiles[0]
+    const validImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'raw']
+    const fileExtension = file.name.split('.').pop().toLowerCase()
+    if (file) {
+      const maxFileSize = 5 * 1024 * 1024
+      if (file.size > maxFileSize) {
+        Swal.fire({
+          icon: 'error',
+          title: this.props.t('file_size_limit.0'),
+          text: this.props.t('file_size_limit.1'),
+          confirmButtonColor: 'blue'
+        })
+        return
+      }
+      if (validImageExtensions.includes(fileExtension)) {
+        this.setState({ imgFile: file })
+      }
+    }
+  }
+
+  removeImage() {
+    this.setState({ imgFile: null })
+  }
+
+  async fileToGenerativePart(file) {
+    const base64EncodedDataPromise = new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result.split(',')[1])
+      reader.readAsDataURL(file)
+      reader.onerror = error => reject(error)
+    })
+    return {
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type }
+    }
+  }
   
   async postPrompt(model, userPrompt) {
     const { totalTokens } = await model.countTokens(`${userPrompt}. ${this.state.filteredPrompt}`)
@@ -38,12 +78,23 @@ class MainContainer extends React.Component {
       })
     } else {
       this.setState({ lastPrompt: userPrompt })
-      const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`)
-      let text = ''
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text()
-        text += chunkText
-        this.setState({ currentPrompt: '', responseResult: text, isLoading: false })
+      if (this.state.imgFile) {
+        const imageParts = await Promise.all([this.fileToGenerativePart(this.state.imgFile)])
+        const result = await model.generateContentStream([`${userPrompt}.\n${this.state.filteredPrompt}`, ...imageParts])
+        let text = ''
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text()
+          text += chunkText
+          this.setState({ currentPrompt: '', responseResult: text, isLoading: false })
+        }
+      } else {
+        const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`)
+        let text = ''
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text()
+          text += chunkText
+          this.setState({ currentPrompt: '', imgFile: null, responseResult: text, isLoading: false })
+        }
       }
     }
   }
@@ -95,9 +146,12 @@ class MainContainer extends React.Component {
       <main className="main-container relative h-full lg:grow w-full flex flex-col overflow-y-auto">
         <section className="grid grid-flow-row w-full lg:grid-cols-2 lg:h-3/5">
           <PromptContainer
+            t={this.props.t}
             state={this.state}
             handleCurrentPromptChange={this.handleCurrentPromptChange.bind(this)}
             handleLastPromptChange={this.handleLastPromptChange.bind(this)}
+            pickImage={this.pickImage.bind(this)}
+            removeImage={this.removeImage.bind(this)}
             generatePrompt={this.generatePrompt.bind(this)}
             regeneratePrompt={this.regeneratePrompt.bind(this)}
             onEditHandler={this.onEditHandler.bind(this)}
