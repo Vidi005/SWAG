@@ -47,7 +47,7 @@ const HeaderContainer = ({ headerTitle, changeLanguage, resetUserData, setDispla
       </Menu>
       {userName && isUserDataEntered &&
         <Menu as={"menu"} className={"h-10 overflow-hidden"}>
-          <Menu.Button className={"inline-flex w-full items-center justify-center h-full p-2 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-white/75 duration-200 rounded-md animate__animated animate__fadeInRight"} title="Languages">
+          <Menu.Button className={"inline-flex w-full items-center justify-center h-full p-2 hover:bg-black/25 focus-visible:ring-2 focus-visible:ring-white/75 duration-200 rounded-md animate__animated animate__fadeInRight"} title="User">
             <span className="hidden md:inline-block text-white text-sm font-serif pr-2">{userName}</span>
             <img className="h-full object-contain" src={`${import.meta.env.BASE_URL}images/user-setting-icon.svg`} alt="User Data Setting" />
             <img className="h-full object-contain" src={`${import.meta.env.BASE_URL}images/expand-icon.svg`} alt="Expand" />

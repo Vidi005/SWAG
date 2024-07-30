@@ -45,7 +45,7 @@ const PreviewContainer = ({ isLoading, responseResult }) => {
       </article>
     )
   } else if (responseResult.includes('<html')) {
-    const normalizedResponseResult = `<html>${responseResult.replace(/^[\s\S]*?<html>|<\/html>[\s\S]*$/gm, '').trim().replace(/```/gm, '').replace(/``/gm, '').replace(/html\s*/gm, '').replace(/<>\s*/gm, '')}</html>`
+    const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200">
         <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">Web Preview</h5>

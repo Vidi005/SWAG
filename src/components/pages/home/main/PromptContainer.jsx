@@ -26,7 +26,7 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
                       <div className="group flex flex-col items-end justify-end flex-auto h-0 w-full px-12 py-2 duration-200">
                         <p className="bg-white dark:bg-gray-700 max-h-full max-w-full p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 shadow-md dark:shadow-white/50 overflow-y-auto">{state.lastPrompt}</p>
                         <span className="h-8 mt-1 group-hover:hidden"></span>
-                        <button className="hidden group-hover:block hover:bg-cyan-200 dark:hover:bg-gray-500 h-7 mt-1 p-1 rounded-md duration-200" onClick={onEditHandler}>
+                        <button title="Edit" className="hidden group-hover:block hover:bg-cyan-200 dark:hover:bg-gray-500 h-7 mt-1 p-1 rounded-md duration-200" onClick={onEditHandler}>
                           <img className="object-contain h-full dark:invert duration-200" src={`${import.meta.env.BASE_URL}images/edit-icon.svg`} alt="Edit Prompt" />
                         </button>
                       </div>
@@ -37,7 +37,7 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
         <div className="flex flex-col items-stretch justify-between w-full h-1/2 p-1">
           <DropZoneContainer t={t} pickImage={pickImage} imgFile={state.imgFile} removeImage={removeImage}/>
           <div className="flex items-center justify-between w-full pt-1">
-            <label htmlFor="image-picker" className="btn-import hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 cursor-pointer p-2 duration-200 rounded-full">
+            <label title="Upload Image" htmlFor="image-picker" className="btn-import hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 cursor-pointer p-2 duration-200 rounded-full">
               <input className="hidden" type="file" id="image-picker" accept="image/*" onChange={(e) => pickImage(e.target.files)} />
               <img className="dark:hidden object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon.svg`} alt="Import Image" />
               <img className="hidden dark:block object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon-dark.svg`} alt="Import Image" />
@@ -46,12 +46,12 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
             {
               state.isGenerating
                 ? (
-                    <button className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={stopPrompt} disabled={state.isLoading || state.currentPrompt.length > 0}>
+                    <button title="Stop Response" className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={stopPrompt} disabled={state.isLoading || state.currentPrompt.length > 0}>
                       <img className="object-contain w-8 animate-pulse" src={`${import.meta.env.BASE_URL}images/stop-icon.svg`} alt="Stop" />
                     </button>
                   )
                 : (
-                    <button className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={generatePrompt} disabled={state.isLoading || state.currentPrompt.length < 1}>
+                    <button title="Send Prompt" className="bg-cyan-500 dark:bg-cyan-700 hover:bg-cyan-900 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 p-2 rounded-full shadow-md dark:shadow-white/50 duration-200" onClick={generatePrompt} disabled={state.isLoading || state.currentPrompt.length < 1}>
                       {state.isLoading
                       ? <div className="border-x-2 border-x-white w-7 h-7 aspect-square animate-spin rounded-full"></div>
                       : <img className="object-contain w-8" src={`${import.meta.env.BASE_URL}images/post-icon.svg`} alt="Generate" />}

@@ -5,6 +5,8 @@ import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/ge
 import PreviewContainer from "./PreviewContainer"
 import Swal from "sweetalert2"
 import HtmlCodeContainer from "./HtmlCodeContainer"
+import CssCodeContainer from "./CssCodeContainer"
+import JsCodeContainer from "./JsCodeContainer"
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -27,11 +29,15 @@ class MainContainer extends React.Component {
   }
 
   handleCurrentPromptChange(event) {
-    this.setState({ currentPrompt: event.target.value })
+    if (!this.state.isGenerating || !this.state.isLoading) {
+      this.setState({ currentPrompt: event.target.value })
+    }
   }
 
   handleLastPromptChange(event) {
-    this.setState({ lastPrompt: event.target.value })
+    if (!this.state.isGenerating || !this.state.isLoading) {
+      this.setState({ lastPrompt: event.target.value })
+    }
   }
 
   pickImage(imgFiles) {
@@ -104,9 +110,7 @@ class MainContainer extends React.Component {
             text += chunkText
             this.setState({ currentPrompt: '', responseResult: text, isLoading: false, isGenerating: true })
           }
-          result.response.finally(() => {
-            this.setState({ isGenerating: false })
-          })
+          this.setState({ isGenerating: false })
         } else {
           const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`, { signal: abortController.signal })
           let text = ''
@@ -114,11 +118,9 @@ class MainContainer extends React.Component {
             if (abortController.signal.aborted) break
             const chunkText = chunk.text()
             text += chunkText
-            this.setState({ currentPrompt: '', imgFile: null, responseResult: text, isLoading: false })
+            this.setState({ currentPrompt: '', imgFile: null, responseResult: text, isLoading: false, isGenerating: true })
           }
-          result.response.finally(() => {
-            this.setState({ isGenerating: false })
-          })
+          this.setState({ isGenerating: false })
         }
       }      
     } catch (error) {
@@ -130,7 +132,7 @@ class MainContainer extends React.Component {
           confirmButtonColor: 'blue'
         })
       }
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false, isGenerating: false })
     }
   }
 
@@ -144,7 +146,7 @@ class MainContainer extends React.Component {
         },
         {
           category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE
+          threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
@@ -171,7 +173,7 @@ class MainContainer extends React.Component {
         },
         {
           category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE
+          threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
@@ -224,8 +226,8 @@ class MainContainer extends React.Component {
         </section>
         <section className="grid grid-flow-row w-full lg:grid-cols-3 lg:grow">
           <HtmlCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
-          <article className="h-[40vh] lg:h-full bg-cyan-100 dark:bg-cyan-900 duration-200"></article>
-          <article className="h-[40vh] lg:h-full bg-yellow-100 dark:bg-yellow-900 duration-200"></article>
+          <CssCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
+          <JsCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
         </section>
         <UserDataEntry
           t={this.props.t}
