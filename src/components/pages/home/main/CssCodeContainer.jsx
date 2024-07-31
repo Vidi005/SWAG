@@ -1,8 +1,8 @@
 import React from "react"
-import SyntaxHighlighter from "react-syntax-highlighter"
+import { LightAsync as SyntaxHighlighter } from "react-syntax-highlighter"
 import { darcula, lightfair } from "react-syntax-highlighter/dist/esm/styles/hljs"
 
-const CssCodeContainer = ({ isLoading, responseResult }) => {
+const CssCodeContainer = ({ isDarkMode, isLoading, responseResult }) => {
   if (isLoading) {
     <article className="flex flex-col h-[40vh] lg:h-full bg-cyan-100 dark:bg-cyan-900 duration-200 overflow-hidden">
       <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">style.css</h5>
@@ -25,13 +25,8 @@ const CssCodeContainer = ({ isLoading, responseResult }) => {
     return (
       <article className="flex flex-col h-[40vh] lg:h-full bg-cyan-100 dark:bg-cyan-900 duration-200">
         <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">style.css</h5>
-        <div className="code-content dark:hidden flex-auto h-0 w-full">
-          <SyntaxHighlighter language="css" style={lightfair} customStyle={{ maxHeight: '100%', width: '100%', padding: '4px', overflow: 'auto' }} showLineNumbers>
-            {cssOnly}
-          </SyntaxHighlighter>
-        </div>
-        <div className="code-content hidden dark:block flex-auto h-0 w-full">
-          <SyntaxHighlighter language="css" style={darcula} customStyle={{ maxHeight: '100%', width: '100%', padding: '4px', overflow: 'auto' }} showLineNumbers>
+        <div className="code-content flex-auto h-0 w-full">
+          <SyntaxHighlighter language="css" style={isDarkMode ? darcula : lightfair} customStyle={{ maxHeight: '100%', width: '100%', padding: '4px', overflow: 'auto' }} showLineNumbers>
             {cssOnly}
           </SyntaxHighlighter>
         </div>

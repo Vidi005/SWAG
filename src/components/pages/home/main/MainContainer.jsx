@@ -7,6 +7,7 @@ import Swal from "sweetalert2"
 import HtmlCodeContainer from "./HtmlCodeContainer"
 import CssCodeContainer from "./CssCodeContainer"
 import JsCodeContainer from "./JsCodeContainer"
+import { fileToGenerativePart } from "../../../../utils/data"
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -65,28 +66,6 @@ class MainContainer extends React.Component {
   removeImage() {
     this.setState({ imgFile: null })
   }
-
-  async fileToGenerativePart(file) {
-    try {
-      const base64EncodedDataPromise = new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result.split(',')[1])
-        reader.readAsDataURL(file)
-        reader.onerror = error => reject(error)
-      })
-      return {
-        inlineData: { data: await base64EncodedDataPromise, mimeType: file.type }
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message.toString(),
-        confirmButtonColor: 'blue'
-      })
-      throw error
-    }
-  }
   
   async postPrompt(model, userPrompt) {
     try {
@@ -101,7 +80,7 @@ class MainContainer extends React.Component {
         const abortController = new AbortController()
         this.setState({ abortController: abortController })
         if (this.state.imgFile) {
-          const imageParts = await Promise.all([this.fileToGenerativePart(this.state.imgFile)])
+          const imageParts = await Promise.all([fileToGenerativePart(this.state.imgFile)])
           const result = await model.generateContentStream([`${userPrompt}.\n${this.state.filteredPrompt}`, ...imageParts], { signal: abortController.signal })
           let text = ''
           for await (const chunk of result.stream) {
@@ -225,9 +204,21 @@ class MainContainer extends React.Component {
           <PreviewContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
         </section>
         <section className="grid grid-flow-row w-full lg:grid-cols-3 lg:grow">
-          <HtmlCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
-          <CssCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
-          <JsCodeContainer isLoading={this.state.isLoading} responseResult={this.state.responseResult}/>
+          <HtmlCodeContainer
+            isDarkMode={this.props.state.isDarkMode}
+            isLoading={this.state.isLoading}
+            responseResult={this.state.responseResult}
+          />
+          <CssCodeContainer
+            isDarkMode={this.props.state.isDarkMode}
+            isLoading={this.state.isLoading}
+            responseResult={this.state.responseResult}
+          />
+          <JsCodeContainer
+            isDarkMode={this.props.state.isDarkMode}
+            isLoading={this.state.isLoading}
+            responseResult={this.state.responseResult}
+          />
         </section>
         <UserDataEntry
           t={this.props.t}
