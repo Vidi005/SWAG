@@ -24,8 +24,27 @@ const JsCodeContainer = ({ isDarkMode, isLoading, responseResult }) => {
     const jsOnly = `${responseResult.replace(/^[\s\S]*?<script>|<\/script>[\s\S]*$/gm, '').replace(/\n    /gm, '\n').replace(/```[\s\S]*$/gm, '').trim()}`
     return (
       <article className="flex flex-col h-[40vh] lg:h-full bg-yellow-100 dark:bg-yellow-900 duration-200">
-        <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">script.js</h5>
-        <div className="code-content flex-auto h-0 w-full">
+        <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
+          <h5 className="px-1 text-black dark:text-white">script.js</h5>
+          <div className="flex items-center text-cyan-900 dark:text-gray-50">
+            <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
+              <p className="hidden md:block text-xs pr-1">Wrap Text</p>
+              <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/wrap-text-icon.svg`} alt="Wrap Text" />
+              <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/wrap-text-icon-dark.svg`} alt="Wrap Text" />
+            </button>
+            <button className="flex items-center justify-center mx-0.5 px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
+              <p className="hidden md:block text-xs pr-1">Copy</p>
+              <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/copy-icon.svg`} alt="Copy Code" />
+              <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/copy-icon-dark.svg`} alt="Copy Code" />
+            </button>
+            <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
+              <p className="hidden md:block text-xs pr-1">Download</p>
+              <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon.svg`} alt="Download Code" />
+              <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon-dark.svg`} alt="Download Code" />
+            </button>
+          </div>
+        </section>
+        <div className="code-content flex-auto h-0 w-full text-sm leading-tight">
           <SyntaxHighlighter language="javascript" style={isDarkMode ? darcula : lightfair} customStyle={{ maxHeight: '100%', width: '100%', padding: '4px', overflow: 'auto' }} showLineNumbers>
             {jsOnly}
           </SyntaxHighlighter>

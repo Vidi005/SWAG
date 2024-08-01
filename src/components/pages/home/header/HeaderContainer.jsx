@@ -4,7 +4,8 @@ import React, { Fragment } from "react"
 const HeaderContainer = ({ headerTitle, changeLanguage, resetUserData, setDisplayMode, isDarkMode, isUserDataEntered, userName }) => (
   <header className="header-container flex flex-nowrap items-center justify-between bg-cyan-500 dark:bg-cyan-700 w-full p-1 shadow-xl z-10">
     <section className="header-title grow flex items-center p-1">
-      <h2 className="grow text-white">S-W-A-G</h2>
+      <img className="h-8 object-contain drop-shadow-md px-1" src={`${import.meta.env.BASE_URL}images/swag-logo.png`} alt="SWAG Logo" />
+      <h3 className="hidden lg:block grow px-2 font-serif text-white">Static Website AI Generator</h3>
     </section>
     <section className="w-fit flex items-center pl-1">
       <a href="https://github.com/Vidi005/SWAG" title="Repository" target="_blank" rel="noreferrer noopener">
