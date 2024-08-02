@@ -15,15 +15,15 @@ export default defineConfig({
       manifest: {
         name: 'Static Website AI Generator',
         short_name: 'SWAG',
-        theme_color: '#ffffff',
+        theme_color: '#0e7490',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'swag-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'swag-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           }

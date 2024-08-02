@@ -25,8 +25,8 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
                     : (
                       <div className="group flex flex-col items-end justify-end flex-auto h-0 w-full px-12 py-2 duration-200">
                         <p className="bg-white dark:bg-gray-700 max-h-full max-w-full p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 shadow-md rounded-md dark:shadow-white/50 overflow-x-hidden overflow-y-auto">{state.lastPrompt}</p>
-                        <span className="h-8 mt-1 group-hover:hidden"></span>
-                        <button title="Edit" className="hidden group-hover:block hover:bg-cyan-200 dark:hover:bg-gray-500 h-7 mt-1 p-1 rounded-md duration-200" onClick={onEditHandler}>
+                        <span className="h-8 mt-1 lg:group-hover:hidden"></span>
+                        <button title="Edit" className="block lg:hidden lg:group-hover:block hover:bg-cyan-200 dark:hover:bg-gray-500 h-7 mt-1 p-1 rounded-md duration-200" onClick={onEditHandler}>
                           <img className="object-contain h-full dark:invert duration-200" src={`${import.meta.env.BASE_URL}images/edit-icon.svg`} alt="Edit Prompt" />
                         </button>
                       </div>

@@ -1,6 +1,6 @@
 import React from "react"
 
-const PreviewContainer = ({ isLoading, responseResult }) => {
+const PreviewContainer = ({ isLoading, responseResult, areCodesCopied, copyToClipboard, openDownloadModal }) => {
   if (isLoading) {
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200 overflow-hidden">
@@ -51,12 +51,15 @@ const PreviewContainer = ({ isLoading, responseResult }) => {
         <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
           <h5 className="px-1 text-black dark:text-white">Web Preview</h5>
           <div className="flex items-center text-cyan-900 dark:text-gray-50">
-            <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
-              <p className="hidden md:block text-xs pr-1">Copy Code</p>
-              <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/copy-icon.svg`} alt="Copy Code" />
-              <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/copy-icon-dark.svg`} alt="Copy Code" />
+            <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200" onClick={event => {
+              event.preventDefault()
+              copyToClipboard('All')
+            }}>
+              <p className="hidden md:block text-xs pr-1">{areCodesCopied ? 'Code Copied!' : 'Copy Code'}</p>
+              <img className="dark:hidden h-5 object-contain" src={areCodesCopied ? `${import.meta.env.BASE_URL}images/checked-icon.svg` : `${import.meta.env.BASE_URL}images/copy-icon.svg`} alt="Copy Code" />
+              <img className="hidden dark:block h-5 object-contain" src={areCodesCopied ? `${import.meta.env.BASE_URL}images/checked-icon-dark.svg` : `${import.meta.env.BASE_URL}images/copy-icon-dark.svg`} alt="Copy Code" />
             </button>
-            <button className="flex items-center justify-center mx-1 px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
+            <button className="flex items-center justify-center mx-1 px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200" onClick={openDownloadModal}>
               <p className="hidden md:block text-xs pr-1">Download Code</p>
               <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon.svg`} alt="Download Code" />
               <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon-dark.svg`} alt="Download Code" />
