@@ -50,7 +50,7 @@ const PreviewContainer = ({ isLoading, responseResult, areCodesCopied, copyToCli
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200">
         <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
           <h5 className="px-1 text-black dark:text-white">Web Preview</h5>
-          <div className="flex items-center text-cyan-900 dark:text-gray-50">
+          <div className="flex items-center px-1 text-cyan-900 dark:text-gray-50">
             <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200" onClick={event => {
               event.preventDefault()
               copyToClipboard('All')

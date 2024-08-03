@@ -239,7 +239,12 @@ class MainContainer extends React.Component {
       if (languageType === 'All') {
         const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${this.state.responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
         navigator.clipboard.writeText(normalizedResponseResult)
-          .then(() => this.setState({ areCodesCopied: true }))
+          .then(() => this.setState({
+            areCodesCopied: true,
+            isHTMLCodeCopied: false,
+            isCSSCodeCopied: false,
+            isJSCodeCopied: false
+          }))
           .catch(error => {
             Swal.fire({
               icon: 'error',
@@ -253,7 +258,12 @@ class MainContainer extends React.Component {
         const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${this.state.responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
         const htmlOnly = normalizedResponseResult.replace(/<style>[\s\S]*?<\/style>/gi, '<link rel="stylesheet" href="styles.css">').replace(/<script>[\s\S]*?<\/script>/gi, '<script src="scripts.js"></script>').replace(/<style>[\s\S]*?<\/style>/gi, '').trim()
         navigator.clipboard.writeText(htmlOnly)
-          .then(() => this.setState({ isHTMLCodeCopied: true }))
+          .then(() => this.setState({
+            isHTMLCodeCopied: true,
+            areCodesCopied: false,
+            isCSSCodeCopied: false,
+            isJSCodeCopied: false
+          }))
           .catch(error => {
             Swal.fire({
               icon: 'error',
@@ -266,7 +276,12 @@ class MainContainer extends React.Component {
       } else if (languageType === 'CSS') {
         const cssOnly = `${this.state.responseResult.replace(/^[\s\S]*?<style>|<\/style>[\s\S]*$/gm, '').replace(/\n    /gm, '\n').replace(/```/gm, '').trim()}`
         navigator.clipboard.writeText(cssOnly)
-          .then(() => this.setState({ isCSSCodeCopied: true }))
+          .then(() => this.setState({
+            isCSSCodeCopied: true,
+            areCodesCopied: false,
+            isHTMLCodeCopied: false,
+            isJSCodeCopied: false
+          }))
           .catch(error => {
             Swal.fire({
               icon: 'error',
@@ -279,7 +294,12 @@ class MainContainer extends React.Component {
       } else if (languageType === 'JS') {
         const jsOnly = `${this.state.responseResult.replace(/^[\s\S]*?<script>|<\/script>[\s\S]*$/gm, '').replace(/\n    /gm, '\n').replace(/```[\s\S]*$/gm, '').trim()}`
         navigator.clipboard.writeText(jsOnly)
-          .then(() => this.setState({ isJSCodeCopied: true }))
+          .then(() => this.setState({
+            isJSCodeCopied: true,
+            areCodesCopied: false,
+            isHTMLCodeCopied: false,
+            isCSSCodeCopied: false
+          }))
           .catch(error => {
             Swal.fire({
               icon: 'error',

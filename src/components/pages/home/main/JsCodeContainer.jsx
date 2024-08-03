@@ -37,7 +37,7 @@ const JsCodeContainer = ({ isDarkMode, isLoading, responseResult, areTextsWrappe
       <article className="flex flex-col h-[40vh] lg:h-full bg-yellow-100 dark:bg-yellow-900 duration-200">
         <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
           <h5 className="px-1 text-black dark:text-white">script.js</h5>
-          <div className="flex items-center text-cyan-900 dark:text-gray-50">
+          <div className="flex items-center px-1 text-cyan-900 dark:text-gray-50">
             <button className={areTextsWrapped ? "flex items-center justify-center mx-0.5 px-2 py-1 bg-cyan-900/25 active:bg-cyan-900/50 dark:bg-white/50 dark:active:bg-white/25 rounded duration-200" : "flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200"} onClick={changeTextView}>
               <p className="hidden md:block text-xs pr-1">Wrap Text</p>
               <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/wrap-text-icon.svg`} alt="Wrap Text" />
@@ -47,7 +47,7 @@ const JsCodeContainer = ({ isDarkMode, isLoading, responseResult, areTextsWrappe
               event.preventDefault()
               copyToClipboard('JS')
             }}>
-              <p className="hidden md:block text-xs pr-1">{isJSCodeCopied ? 'Copied' : 'Copy'}</p>
+              <p className="hidden md:block text-xs pr-1">{isJSCodeCopied ? 'Copied!' : 'Copy'}</p>
               <img className="dark:hidden h-5 object-contain" src={isJSCodeCopied ? `${import.meta.env.BASE_URL}images/checked-icon.svg` : `${import.meta.env.BASE_URL}images/copy-icon.svg`} alt="Copy Code" />
               <img className="hidden dark:block h-5 object-contain" src={isJSCodeCopied ? `${import.meta.env.BASE_URL}images/checked-icon-dark.svg` : `${import.meta.env.BASE_URL}images/copy-icon-dark.svg`} alt="Copy Code" />
             </button>
