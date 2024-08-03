@@ -1,11 +1,11 @@
 import React from "react"
 
-const PreviewContainer = ({ isLoading, responseResult, areCodesCopied, copyToClipboard, openDownloadModal }) => {
+const PreviewContainer = ({ isLoading, responseResult, areCodesCopied, copyToClipboard, openDownloadModal, saveTempWebPreview }) => {
   if (isLoading) {
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200 overflow-hidden">
         <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">Web Preview</h5>
-        <div className="preview-thumbnail grow flex flex-col w-full" style={{ animation: "shimmer 1.5s ease-out infinite" }}>
+        <div className="preview-thumbnail grow flex flex-col w-full" style={{ animation: "shimmer 1s ease-out infinite" }}>
           <section className="thumbnail-header w-full p-3 bg-black/50 dark:bg-white/50"></section>
           <section className="thumbnail-main grow flex w-full">
             <div className="aside flex flex-col w-1/5 border-r border-r-black/50 dark:border-r-white/50 p-4 overflow-y-auto">
@@ -64,14 +64,14 @@ const PreviewContainer = ({ isLoading, responseResult, areCodesCopied, copyToCli
               <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon.svg`} alt="Download Code" />
               <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon-dark.svg`} alt="Download Code" />
             </button>
-            <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200">
+            <a href={`${location.origin}/preview`} target="_blank" rel="noreferrer" className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200" onClick={saveTempWebPreview}>
               <p className="hidden md:block text-xs pr-1">Open in New Tab</p>
               <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/open-new-icon.svg`} alt="Open in New Tab" />
               <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/open-new-icon-dark.svg`} alt="Open in New Tab" />
-            </button>
+            </a>
           </div>
         </section>
-        <iframe title="Web Preview" srcDoc={normalizedResponseResult} className="w-full grow" frameborder="0"></iframe>
+        <iframe title="Web Preview" srcDoc={normalizedResponseResult} className="w-full grow duration-200" frameborder="0"></iframe>
       </article>
     )
   } else {

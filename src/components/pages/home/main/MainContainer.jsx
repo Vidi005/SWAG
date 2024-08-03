@@ -7,7 +7,7 @@ import Swal from "sweetalert2"
 import HtmlCodeContainer from "./HtmlCodeContainer"
 import CssCodeContainer from "./CssCodeContainer"
 import JsCodeContainer from "./JsCodeContainer"
-import { fileToGenerativePart } from "../../../../utils/data"
+import { fileToGenerativePart, isStorageExist } from "../../../../utils/data"
 import DownloadFileModal from "../pop_up/DownloadFileModal"
 import JSZip from "jszip"
 
@@ -16,6 +16,7 @@ class MainContainer extends React.Component {
     super(props)
     this.state = {
       USER_CHATS_STORAGE_KEY: 'USER_CHATS_STORAGE_KEY',
+      TEMP_WEB_PREVIEW_STORAGE_KEY: 'TEMP_WEB_PREVIEW_STORAGE_KEY',
       genAIModel: 'gemini-1.5-flash',
       isLoading: false,
       isEditing: false,
@@ -35,6 +36,18 @@ class MainContainer extends React.Component {
       userChatData: null
     }
     this.inputRef = React.createRef()
+  }
+
+  componentDidMount() {
+    addEventListener('beforeunload', () => {
+      localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
+    })
+  }
+
+  componentWillUnmount() {
+    removeEventListener('beforeunload', () => {
+      localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
+    })
   }
 
   handleCurrentPromptChange(event) {
@@ -334,6 +347,13 @@ class MainContainer extends React.Component {
     })
   }
 
+  saveTempWebPreview() {
+    if (isStorageExist(this.props.t('browser_warning'))) {
+      const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${this.state.responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
+      localStorage.setItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY, JSON.stringify(normalizedResponseResult))
+    }
+  }
+
   cancelDownload() {
     this.setState({ isDialogOpened: false })
   }
@@ -365,6 +385,7 @@ class MainContainer extends React.Component {
             areCodesCopied={this.state.areCodesCopied}
             copyToClipboard={this.copyToClipboard.bind(this)}
             openDownloadModal={this.openDownloadModal.bind(this)}
+            saveTempWebPreview={this.saveTempWebPreview.bind(this)}
           />
         </section>
         <section className="grid grid-flow-row items-stretch w-full lg:grid-cols-3 lg:grow">

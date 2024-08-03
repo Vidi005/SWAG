@@ -7,7 +7,7 @@ const JsCodeContainer = ({ isDarkMode, isLoading, responseResult, areTextsWrappe
     return (
       <article className="flex flex-col h-[40vh] lg:h-full bg-yellow-100 dark:bg-yellow-900 duration-200 overflow-hidden">
         <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">script.js</h5>
-        <div className="code-thumbnail flex-auto h-0 flex flex-col w-full p-2 overflow-y-auto" style={{ animation: "shimmer 1.5s ease-out infinite" }}>
+        <div className="code-thumbnail flex-auto h-0 flex flex-col w-full p-2 overflow-y-auto" style={{ animation: "shimmer 1s ease-out infinite" }}>
           <span className="w-full mb-3 p-1 bg-black/50 dark:bg-white/50 rounded-xl"></span>
           <span className="w-5/6 ml-auto mb-3 p-1 bg-black/50 dark:bg-white/50 rounded-xl"></span>
           <span className="w-4/5 ml-auto mb-3 p-1 bg-black/50 dark:bg-white/50 rounded-xl"></span>

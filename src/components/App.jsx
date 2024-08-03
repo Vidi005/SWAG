@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom"
 import HomePage from "./pages/home/HomePage"
 import NoPage from "./pages/empty/NoPage"
 import Swal from "sweetalert2"
+import FullPreviewPage from "./pages/full_preview/FullPreviewPage"
 
 class App extends React.Component {
   constructor(props) {
@@ -185,7 +186,7 @@ class App extends React.Component {
     return (
       <React.Fragment>
         <Helmet>
-          <title>{i18n.t('app_title')}</title>
+          <title>{i18n.t('app_name')}</title>
           <meta name="description" content={i18n.t('app_description')} />
           <link rel="canonical" href={location.toString()} />
         </Helmet>
@@ -207,6 +208,7 @@ class App extends React.Component {
               />
             }/>
           </>
+          <Route path="/preview" element={<FullPreviewPage t={i18n.t}/>}/>
           <Route path="*" element={<NoPage t={i18n.t}/>}/>
         </Routes>
       </React.Fragment>
