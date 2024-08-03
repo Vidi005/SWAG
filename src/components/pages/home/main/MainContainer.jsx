@@ -25,7 +25,7 @@ class MainContainer extends React.Component {
       lastPrompt: '',
       imgFile: null,
       abortController: null,
-      filteredPrompt: 'Create a single HTML file without any backend code. If using front-end web libraries, import them only from a CDN and write the code within the <script> tag. If using native CSS, include it as inline CSS within the HTML code. If using JavaScript, write it as inline JavaScript within the HTML code. Provide only the complete HTML code without any additional explanations or descriptions.',
+      filteredPrompt: this.props.t('filtered_prompt'),
       responseResult: '',
       areCodesCopied: false,
       areTextsWrapped: false,
@@ -93,7 +93,7 @@ class MainContainer extends React.Component {
       const { totalTokens } = await model.countTokens(`${userPrompt}. ${this.state.filteredPrompt}`)
       if (totalTokens > 10000) {
         this.setState({
-          responseResult: 'The prompt is too long. Please try again.',
+          responseResult: this.props.t('prompt_token_limit'),
           isLoading: false
         })
       } else {
@@ -139,7 +139,7 @@ class MainContainer extends React.Component {
       if (error.name !== 'AbortError') {
         Swal.fire({
           icon: 'error',
-          title: 'Error',
+          title: this.props.t('send_prompt_fail'),
           text: `${error.message}`,
           confirmButtonColor: 'blue'
         })
@@ -176,7 +176,7 @@ class MainContainer extends React.Component {
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: this.props.t('generate_prompt_fail'),
         text: error.message,
         confirmButtonColor: 'blue'
       })
@@ -211,7 +211,7 @@ class MainContainer extends React.Component {
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: this.props.t('generate_prompt_fail'),
         text: error.message,
         confirmButtonColor: 'blue'
       })
@@ -248,7 +248,7 @@ class MainContainer extends React.Component {
           .catch(error => {
             Swal.fire({
               icon: 'error',
-              title: 'Can\'t Copy any Codes',
+              title: this.props.t('copy_codes_fail.0'),
               text: error.message,
               confirmButtonColor: 'blue'
             })
@@ -267,7 +267,7 @@ class MainContainer extends React.Component {
           .catch(error => {
             Swal.fire({
               icon: 'error',
-              title: 'Can\'t Copy HTML Code',
+              title: this.props.t('copy_html_fail'),
               text: error.message,
               confirmButtonColor: 'blue'
             })
@@ -285,7 +285,7 @@ class MainContainer extends React.Component {
           .catch(error => {
             Swal.fire({
               icon: 'error',
-              title: 'Can\'t Copy CSS Code',
+              title: this.props.t('copy_css_fail'),
               text: error.message,
               confirmButtonColor: 'blue'
             })
@@ -303,7 +303,7 @@ class MainContainer extends React.Component {
           .catch(error => {
             Swal.fire({
               icon: 'error',
-              title: 'Can\'t Copy JS Code',
+              title: this.props.t('copy_js_fail'),
               text: error.message,
               confirmButtonColor: 'blue'
             })
@@ -313,8 +313,8 @@ class MainContainer extends React.Component {
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'Can\'t Copy any Codes',
-        text: 'Clipboard API is not supported',
+        title: this.props.t('copy_codes_fail.0'),
+        text: this.props.t('copy_codes_fail.1'),
         confirmButtonColor: 'blue'
       })
       this.setState({ areCodesCopied: false })
@@ -360,7 +360,7 @@ class MainContainer extends React.Component {
     }).catch(error => {
       Swal.fire({
         icon: 'error',
-        title: 'Can\'t Download File',
+        title: this.props.t('download_fail'),
         text: error.message,
         confirmButtonColor: 'blue'
       })
@@ -400,6 +400,7 @@ class MainContainer extends React.Component {
             onCancelHandler={this.onCancelHandler.bind(this)}
           />
           <PreviewContainer
+            t={this.props.t}
             isLoading={this.state.isLoading}
             responseResult={this.state.responseResult}
             areCodesCopied={this.state.areCodesCopied}
@@ -410,6 +411,7 @@ class MainContainer extends React.Component {
         </section>
         <section className="grid grid-flow-row items-stretch w-full lg:grid-cols-3 lg:grow">
           <HtmlCodeContainer
+            t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
             responseResult={this.state.responseResult}
@@ -419,6 +421,7 @@ class MainContainer extends React.Component {
             copyToClipboard={this.copyToClipboard.bind(this)}
           />
           <CssCodeContainer
+            t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
             responseResult={this.state.responseResult}
@@ -428,6 +431,7 @@ class MainContainer extends React.Component {
             copyToClipboard={this.copyToClipboard.bind(this)}
           />
           <JsCodeContainer
+            t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
             responseResult={this.state.responseResult}

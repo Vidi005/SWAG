@@ -53,8 +53,9 @@ const UserDataEntry = ({ t, inputRef, isUserDataEntered, isFocused, isDataWillBe
             />
             <br />
             <p className="text-center text-sm text-cyan-800 dark:text-gray-200 duration-200">
-              {t('Free Tier Gemini API Key can be obtained from')}<a className="underline text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-50 active:text-violet-700 duration-200" href="https://ai.google.dev/pricing" target="_blank" rel="noopener noreferrer">Google AI Site</a>.
+              {t('obtaining_api_key')}<a className="underline text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-50 active:text-violet-700 duration-200" href="https://ai.google.dev/pricing" target="_blank" rel="noopener noreferrer">{t('gemini_site')}</a>.
             </p>
+            <p className="text-center text-sm text-yellow-800 dark:text-orange-200 duration-200">{t('gemini_ai_usage_note')}</p>
             <Listbox value={isDataWillBeSaved} onChange={changeUserDataSetting} className="w-full bg-cyan-50 dark:bg-gray-900 text-cyan-900 dark:text-white duration-200">
               <Listbox.Options static className="max-h-full flex items-center justify-center">
                 <Listbox.Option as="label" className={"cursor-pointer p-2"}>

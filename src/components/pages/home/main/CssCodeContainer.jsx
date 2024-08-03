@@ -2,7 +2,7 @@ import React from "react"
 import { LightAsync as SyntaxHighlighter } from "react-syntax-highlighter"
 import { darcula, lightfair } from "react-syntax-highlighter/dist/esm/styles/hljs"
 
-const CssCodeContainer = ({ isDarkMode, isLoading, responseResult, areTextsWrapped, isCSSCodeCopied, changeTextView, copyToClipboard }) => {
+const CssCodeContainer = ({ t, isDarkMode, isLoading, responseResult, areTextsWrapped, isCSSCodeCopied, changeTextView, copyToClipboard }) => {
   if (isLoading) {
     return (
       <article className="flex flex-col h-[40vh] lg:h-full bg-cyan-100 dark:bg-cyan-900 duration-200 overflow-hidden">
@@ -47,12 +47,12 @@ const CssCodeContainer = ({ isDarkMode, isLoading, responseResult, areTextsWrapp
               event.preventDefault()
               copyToClipboard('CSS')
             }}>
-              <p className="hidden md:block text-xs pr-1">{isCSSCodeCopied ? 'Copied!' : 'Copy'}</p>
+              <p className="hidden md:block text-xs pr-1">{isCSSCodeCopied ? t('copy_code.0') : t('copy_code.1')}</p>
               <img className="dark:hidden h-5 object-contain" src={isCSSCodeCopied ? `${import.meta.env.BASE_URL}images/checked-icon.svg` : `${import.meta.env.BASE_URL}images/copy-icon.svg`} alt="Copy Code" />
               <img className="hidden dark:block h-5 object-contain" src={isCSSCodeCopied ? `${import.meta.env.BASE_URL}images/checked-icon-dark.svg` : `${import.meta.env.BASE_URL}images/copy-icon-dark.svg`} alt="Copy Code" />
             </button>
             <button className="flex items-center justify-center px-2 py-1 hover:bg-cyan-900/25 active:hover:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 rounded duration-200" onClick={downloadCSSOnly.bind(this)}>
-              <p className="hidden md:block text-xs pr-1">Download</p>
+              <p className="hidden md:block text-xs pr-1">{t('download_code')}</p>
               <img className="dark:hidden h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon.svg`} alt="Download Code" />
               <img className="hidden dark:block h-5 object-contain" src={`${import.meta.env.BASE_URL}images/download-icon-dark.svg`} alt="Download Code" />
             </button>

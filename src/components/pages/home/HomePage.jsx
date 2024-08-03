@@ -10,7 +10,7 @@ const HomePage = ({ t, state, changeLanguage, setDisplayMode, handleNameChange, 
       <meta name="keywords" content="SWAG" />
     </Helmet>
     <HeaderContainer
-      headerTitle={t('app_name')}
+      t={t}
       isDarkMode={state.isDarkMode}
       isUserDataEntered={state.isUserDataEntered}
       userName={state.userName}

@@ -1,11 +1,11 @@
 import { Menu, Switch, Transition } from "@headlessui/react"
 import React, { Fragment } from "react"
 
-const HeaderContainer = ({ headerTitle, changeLanguage, resetUserData, setDisplayMode, isDarkMode, isUserDataEntered, userName }) => (
+const HeaderContainer = ({ t, changeLanguage, resetUserData, setDisplayMode, isDarkMode, isUserDataEntered, userName }) => (
   <header className="header-container flex flex-nowrap items-center justify-between bg-cyan-500 dark:bg-cyan-700 w-full p-1 shadow-xl z-10">
     <section className="header-title grow flex items-center p-1">
       <img className="h-8 object-contain drop-shadow-md px-1" src={`${import.meta.env.BASE_URL}images/swag-logo.png`} alt="SWAG Logo" />
-      <h3 className="hidden lg:block grow px-2 font-serif text-white">Static Website AI Generator</h3>
+      <h3 className="hidden lg:block grow px-2 font-serif text-white">{t('app_name')}</h3>
     </section>
     <section className="w-fit flex items-center pl-1">
       <a href="https://github.com/Vidi005/SWAG" title="Repository" target="_blank" rel="noreferrer noopener">
@@ -65,7 +65,7 @@ const HeaderContainer = ({ headerTitle, changeLanguage, resetUserData, setDispla
             <Menu.Items className="absolute grid grid-flow-row gap-1 right-1 mt-2 w-max origin-top-right divide-y divide-cyan-100 rounded-lg bg-cyan-500 dark:bg-cyan-700 shadow-lg ring-1 ring-cyan-100 ring-opacity-5 focus:outline-none text-base z-20 overflow-hidden">
               <Menu.Item as={"span"} className={"flex items-center text-white text-right hover:bg-cyan-300 hover:text-cyan-900 cursor-pointer p-2 duration-200 rounded-md animate__animated animate__fadeInRight animate__faster"} onClick={() => resetUserData()}>
                 <img className="h-full object-contain pr-2" src={`${import.meta.env.BASE_URL}images/delete-all-icon.svg`} alt="Delete All" />
-                <span>Reset User Data</span>
+                <span>{t('reset_user_data')}</span>
               </Menu.Item>
             </Menu.Items>
           </Transition>

@@ -167,6 +167,8 @@ class App extends React.Component {
       cancelButtonColor: "red"
     }).then(result => {
       if (result.isConfirmed) {
+        sessionStorage.removeItem(this.state.USER_API_STORAGE_KEY)
+        sessionStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_API_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
         location.reload()

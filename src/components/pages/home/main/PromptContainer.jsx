@@ -3,7 +3,7 @@ import DropZoneContainer from "./DropZoneContainer"
 
 const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPromptChange, pickImage, removeImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
-    <h5 className="border-b border-b-cyan-900 dark:border-b-white p-1 text-cyan-900 dark:text-white">Prompt Generator</h5>
+    <h5 className="border-b border-b-cyan-900 dark:border-b-white p-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
     <div className="prompt-container flex flex-nowrap items-stretch grow p-2">
       <img className="object-contain w-8 mb-auto pr-1 invert dark:invert-0 duration-200" src={`${import.meta.env.BASE_URL}images/sidebar-icon.svg`} alt="View Sidebar" />
       <div className="w-0 flex-auto flex flex-col h-full items-center justify-end p-1 bg-cyan-50 dark:bg-gray-900 rounded shadow-inner duration-200">
@@ -17,8 +17,8 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
                         <div className="flex flex-col flex-auto h-0 items-end justify-end w-full px-12 py-2 duration-200 overflow-y-auto">
                           <textarea onChange={handleLastPromptChange} value={state.lastPrompt} className="grow w-full border border-cyan-900 dark:border-none bg-cyan-100 dark:bg-gray-700 p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 overflow-x-hidden overflow-y-auto rounded-md" required></textarea>
                           <span className="flex pt-1 items-center text-cyan-900 dark:text-white">
-                            <button className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 active:bg-gray-500 dark:hover:bg-gray-900 dark:active:bg-gray-500 mr-3 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={onCancelHandler}>Cancel</button>
-                            <button className="bg-cyan-300 dark:bg-cyan-700 hover:bg-cyan-500 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={regeneratePrompt} disabled={state.isLoading || state.lastPrompt.length < 1}>Regenerate</button>
+                            <button className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 active:bg-gray-500 dark:hover:bg-gray-900 dark:active:bg-gray-500 mr-3 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={onCancelHandler}>{t('cancel')}</button>
+                            <button className="bg-cyan-300 dark:bg-cyan-700 hover:bg-cyan-500 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={regeneratePrompt} disabled={state.isLoading || state.lastPrompt.length < 1}>{t('regenerate')}</button>
                           </span>
                         </div>
                       )
@@ -42,7 +42,7 @@ const PromptContainer = ({ t, state, handleCurrentPromptChange, handleLastPrompt
               <img className="dark:hidden object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon.svg`} alt="Import Image" />
               <img className="hidden dark:block object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon-dark.svg`} alt="Import Image" />
             </label>
-            <textarea onChange={handleCurrentPromptChange} placeholder="Create new prompt here..." value={state.currentPrompt} rows="2" className="grow border border-cyan-700 dark:border-gray-200 bg-white dark:bg-black w-full mx-2 p-2 text-black dark:text-white rounded-md md:rounded-lg duration-200" required></textarea>
+            <textarea onChange={handleCurrentPromptChange} placeholder={t('create_new_prompt')} value={state.currentPrompt} rows="2" className="grow border border-cyan-700 dark:border-gray-200 bg-white dark:bg-black w-full mx-2 p-2 text-black dark:text-white rounded-md md:rounded-lg duration-200" required></textarea>
             {
               state.isGenerating
                 ? (
