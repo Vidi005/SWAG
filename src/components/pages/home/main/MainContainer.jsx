@@ -36,12 +36,17 @@ class MainContainer extends React.Component {
       userChatData: null
     }
     this.inputRef = React.createRef()
+    this.iframeRef = React.createRef()
   }
 
   componentDidMount() {
     addEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
+  }
+
+  componentDidUpdate(_prevProps, prevState) {
+    if (prevState.responseResult !== this.state.responseResult) this.scrollToBottom()
   }
 
   componentWillUnmount() {
@@ -74,7 +79,8 @@ class MainContainer extends React.Component {
           icon: 'error',
           title: this.props.t('file_size_limit.0'),
           text: this.props.t('file_size_limit.1'),
-          confirmButtonColor: 'blue'
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
         })
         return
       }
@@ -141,7 +147,8 @@ class MainContainer extends React.Component {
           icon: 'error',
           title: this.props.t('send_prompt_fail'),
           text: `${error.message}`,
-          confirmButtonColor: 'blue'
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
         })
       }
       this.setState({ isLoading: false, isGenerating: false })
@@ -178,7 +185,8 @@ class MainContainer extends React.Component {
         icon: 'error',
         title: this.props.t('generate_prompt_fail'),
         text: error.message,
-        confirmButtonColor: 'blue'
+        confirmButtonColor: 'blue',
+        confirmButtonText: this.props.t('ok')
       })
       this.setState({ isLoading: false })
     }
@@ -213,7 +221,8 @@ class MainContainer extends React.Component {
         icon: 'error',
         title: this.props.t('generate_prompt_fail'),
         text: error.message,
-        confirmButtonColor: 'blue'
+        confirmButtonColor: 'blue',
+        confirmButtonText: this.props.t('ok')
       })
       this.setState({ isLoading: false })
     }
@@ -223,6 +232,22 @@ class MainContainer extends React.Component {
     if (this.state.abortController) {
       this.state.abortController.abort()
       this.setState({ isLoading: false, abortController: null, isGenerating: false })
+    }
+  }
+
+  scrollToBottom() {
+    if (this.state.responseResult.includes('<html')) {
+      this.iframeRef.current.contentWindow.scrollTo(0, 999999)
+      const codeContent = document.querySelector('.html-code-content pre')
+      if (codeContent) codeContent.scrollTop = codeContent.scrollHeight
+    }
+    if (this.state.responseResult.includes('<style>')) {
+      const codeContent = document.querySelector('.css-code-content pre')
+      if (codeContent) codeContent.scrollTop = codeContent.scrollHeight
+    }
+    if (this.state.responseResult.includes('<script>')) {
+      const codeContent = document.querySelector('.js-code-content pre')
+      if (codeContent) codeContent.scrollTop = codeContent.scrollHeight
     }
   }
 
@@ -250,7 +275,8 @@ class MainContainer extends React.Component {
               icon: 'error',
               title: this.props.t('copy_codes_fail.0'),
               text: error.message,
-              confirmButtonColor: 'blue'
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
             })
             this.setState({ areCodesCopied: false })
           })
@@ -269,7 +295,8 @@ class MainContainer extends React.Component {
               icon: 'error',
               title: this.props.t('copy_html_fail'),
               text: error.message,
-              confirmButtonColor: 'blue'
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
             })
             this.setState({ isHTMLCodeCopied: false })
           })
@@ -287,7 +314,8 @@ class MainContainer extends React.Component {
               icon: 'error',
               title: this.props.t('copy_css_fail'),
               text: error.message,
-              confirmButtonColor: 'blue'
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
             })
             this.setState({ isCSSCodeCopied: false })
           })
@@ -305,7 +333,8 @@ class MainContainer extends React.Component {
               icon: 'error',
               title: this.props.t('copy_js_fail'),
               text: error.message,
-              confirmButtonColor: 'blue'
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
             })
             this.setState({ isJSCodeCopied: false })
           })
@@ -315,7 +344,8 @@ class MainContainer extends React.Component {
         icon: 'error',
         title: this.props.t('copy_codes_fail.0'),
         text: this.props.t('copy_codes_fail.1'),
-        confirmButtonColor: 'blue'
+        confirmButtonColor: 'blue',
+        confirmButtonText: this.props.t('ok')
       })
       this.setState({ areCodesCopied: false })
     }
@@ -362,7 +392,8 @@ class MainContainer extends React.Component {
         icon: 'error',
         title: this.props.t('download_fail'),
         text: error.message,
-        confirmButtonColor: 'blue'
+        confirmButtonColor: 'blue',
+        confirmButtonText: this.props.t('ok')
       })
     })
   }
@@ -401,6 +432,7 @@ class MainContainer extends React.Component {
           />
           <PreviewContainer
             t={this.props.t}
+            iframeRef={this.iframeRef}
             isLoading={this.state.isLoading}
             responseResult={this.state.responseResult}
             areCodesCopied={this.state.areCodesCopied}

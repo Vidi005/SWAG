@@ -1,6 +1,6 @@
 import React from "react"
 
-const PreviewContainer = ({ t, isLoading, responseResult, areCodesCopied, copyToClipboard, openDownloadModal, saveTempWebPreview }) => {
+const PreviewContainer = ({ t, iframeRef, isLoading, responseResult, areCodesCopied, copyToClipboard, openDownloadModal, saveTempWebPreview }) => {
   if (isLoading) {
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200 overflow-hidden">
@@ -71,7 +71,7 @@ const PreviewContainer = ({ t, isLoading, responseResult, areCodesCopied, copyTo
             </a>
           </div>
         </section>
-        <iframe title="Web Preview" srcDoc={normalizedResponseResult} className="w-full grow duration-200" frameborder="0"></iframe>
+        <iframe title="Web Preview" ref={iframeRef} srcDoc={normalizedResponseResult} className="w-full grow duration-200"></iframe>
       </article>
     )
   } else {

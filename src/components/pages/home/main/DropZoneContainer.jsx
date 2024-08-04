@@ -13,7 +13,8 @@ const DropZoneContainer = ({ t, pickImage, imgFile, removeImage }) => (
           icon: 'error',
           title: t('invalid_file.0'),
           text: t('invalid_file.1'),
-          confirmButtonColor: 'blue'
+          confirmButtonColor: 'blue',
+          confirmButtonText: t('ok')
         })
       }
     }}

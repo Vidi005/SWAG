@@ -164,7 +164,9 @@ class App extends React.Component {
       icon: "warning",
       confirmButtonColor: "blue",
       showCancelButton: true,
-      cancelButtonColor: "red"
+      cancelButtonColor: "red",
+      confirmButtonText: i18n.t('yes'),
+      cancelButtonText: i18n.t('no')
     }).then(result => {
       if (result.isConfirmed) {
         sessionStorage.removeItem(this.state.USER_API_STORAGE_KEY)

@@ -58,7 +58,7 @@ const JsCodeContainer = ({ t, isDarkMode, isLoading, responseResult, areTextsWra
             </button>
           </div>
         </section>
-        <div className="code-content flex-auto h-0 w-screen lg:w-full text-sm leading-tight">
+        <div className="js-code-content flex-auto h-0 w-screen lg:w-full text-sm leading-tight">
           <SyntaxHighlighter language="javascript" style={isDarkMode ? darcula : lightfair} customStyle={{ maxHeight: '100%', width: '100%', padding: '4px', overflow: 'auto' }} showLineNumbers wrapLongLines={areTextsWrapped} wrapLines={areTextsWrapped}>
             {jsOnly}
           </SyntaxHighlighter>
