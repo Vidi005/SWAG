@@ -19,7 +19,7 @@ class MainContainer extends React.Component {
       USER_CHATS_STORAGE_KEY: 'USER_CHATS_STORAGE_KEY',
       TEMP_WEB_PREVIEW_STORAGE_KEY: 'TEMP_WEB_PREVIEW_STORAGE_KEY',
       geminiAIModels: geminiAIModels,
-      selectedModel: geminiAIModels[2],
+      selectedModel: geminiAIModels[1],
       isLoading: false,
       isEditing: false,
       isGenerating: false,

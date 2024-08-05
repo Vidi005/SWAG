@@ -21,7 +21,7 @@ export default defineConfig({
         icons: [
           {
             src: 'favicon.ico',
-            sizes: '144x144',
+            sizes: '144x144 64x64 32x32 24x24 16x16',
             type: 'image/x-icon',
             purpose: 'any maskable'
           },
