@@ -26,7 +26,7 @@
     "prompt_token_limit": "Perintah terlalu panjang. Silakan coba lagi dengan perintah yang lebih pendek.",
     "send_prompt_fail": "Gagal Mengirim Perintah!",
     "generate_prompt_fail": "Gagal Menerapkan Perintah!",
-    "generating": "Menerapkan . . . ",
+    "generating": "Menyusun . . . ",
     "copy_all_code": ["Kode Disalin!", "Salin Kode"],
     "copy_code": ["Disalin!", "Salin"],
     "download_code": "Unduh",
