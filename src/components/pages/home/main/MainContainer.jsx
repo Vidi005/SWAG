@@ -7,7 +7,7 @@ import Swal from "sweetalert2"
 import HtmlCodeContainer from "./HtmlCodeContainer"
 import CssCodeContainer from "./CssCodeContainer"
 import JsCodeContainer from "./JsCodeContainer"
-import { fileToGenerativePart, isStorageExist } from "../../../../utils/data"
+import { fileToGenerativePart, geminiAIModels, isStorageExist } from "../../../../utils/data"
 import DownloadFileModal from "../pop_up/DownloadFileModal"
 import JSZip from "jszip"
 
@@ -15,9 +15,11 @@ class MainContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      GEMINI_AI_MODEL_STORAGE_KEY: 'GEMINI_AI_MODEL_STORAGE_KEY',
       USER_CHATS_STORAGE_KEY: 'USER_CHATS_STORAGE_KEY',
       TEMP_WEB_PREVIEW_STORAGE_KEY: 'TEMP_WEB_PREVIEW_STORAGE_KEY',
-      genAIModel: 'gemini-1.5-flash',
+      geminiAIModels: geminiAIModels,
+      selectedModel: geminiAIModels[2],
       isLoading: false,
       isEditing: false,
       isGenerating: false,
@@ -40,6 +42,7 @@ class MainContainer extends React.Component {
   }
 
   componentDidMount() {
+    this.loadSavedGeminiModel()
     addEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
@@ -53,6 +56,20 @@ class MainContainer extends React.Component {
     removeEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
+  }
+
+  loadSavedGeminiModel() {
+    const geminiAIModel = localStorage.getItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY) || this.state.selectedModel.variant
+    this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
+  }
+
+  changeGeminiModel(selectedVariant) {
+    if (!this.state.isGenerating || !this.state.isLoading) {
+      this.setState({ selectedModel: this.state.geminiAIModels.find(model => model.variant === selectedVariant) }, () => {
+        localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
+        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ imgFile: null })
+      })
+    }
   }
 
   handleCurrentPromptChange(event) {
@@ -178,7 +195,7 @@ class MainContainer extends React.Component {
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
-      const model = genAI.getGenerativeModel({ model: this.state.genAIModel, safetySettings })
+      const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
       this.postPrompt(model, this.state.currentPrompt)
     } catch (error) {
       Swal.fire({
@@ -214,7 +231,7 @@ class MainContainer extends React.Component {
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
-      const model = genAI.getGenerativeModel({ model: this.state.genAIModel, safetySettings })
+      const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
       this.postPrompt(model, this.state.lastPrompt)
     } catch (error) {
       Swal.fire({
@@ -235,9 +252,9 @@ class MainContainer extends React.Component {
     }
   }
 
-  scrollToBottom() {
+  async scrollToBottom() {
     if (this.state.responseResult.includes('<html')) {
-      this.iframeRef.current.contentWindow.scrollTo(0, 999999)
+      await this.iframeRef.current.contentWindow.scrollTo(0, 999999)
       const codeContent = document.querySelector('.html-code-content pre')
       if (codeContent) codeContent.scrollTop = codeContent.scrollHeight
     }
@@ -420,6 +437,7 @@ class MainContainer extends React.Component {
           <PromptContainer
             t={this.props.t}
             state={this.state}
+            changeGeminiModel={this.changeGeminiModel.bind(this)}
             handleCurrentPromptChange={this.handleCurrentPromptChange.bind(this)}
             handleLastPromptChange={this.handleLastPromptChange.bind(this)}
             pickImage={this.pickImage.bind(this)}
@@ -434,6 +452,7 @@ class MainContainer extends React.Component {
             t={this.props.t}
             iframeRef={this.iframeRef}
             isLoading={this.state.isLoading}
+            isGenerating={this.state.isGenerating}
             responseResult={this.state.responseResult}
             areCodesCopied={this.state.areCodesCopied}
             copyToClipboard={this.copyToClipboard.bind(this)}
@@ -446,6 +465,7 @@ class MainContainer extends React.Component {
             t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
+            isGenerating={this.state.isGenerating}
             responseResult={this.state.responseResult}
             areTextsWrapped={this.state.areTextsWrapped}
             isHTMLCodeCopied={this.state.isHTMLCodeCopied}
@@ -456,6 +476,7 @@ class MainContainer extends React.Component {
             t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
+            isGenerating={this.state.isGenerating}
             responseResult={this.state.responseResult}
             areTextsWrapped={this.state.areTextsWrapped}
             isCSSCodeCopied={this.state.isCSSCodeCopied}
@@ -466,6 +487,7 @@ class MainContainer extends React.Component {
             t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}
             isLoading={this.state.isLoading}
+            isGenerating={this.state.isGenerating}
             responseResult={this.state.responseResult}
             areTextsWrapped={this.state.areTextsWrapped}
             isJSCodeCopied={this.state.isJSCodeCopied}

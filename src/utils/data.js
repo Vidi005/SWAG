@@ -9,6 +9,21 @@ const isStorageExist = content => {
   }
 }
 
+const geminiAIModels = [
+  {
+    variant: 'gemini-1.5-pro',
+    input: 'multimodal'
+  },
+  {
+    variant: 'gemini-1.5-flash',
+    input: 'multimodal'
+  },
+  {
+    variant: 'gemini-1.0-pro',
+    input: 'text'
+  }
+]
+
 const fileToGenerativePart = async (file) => {
   try {
     const base64EncodedDataPromise = new Promise((resolve, reject) => {
@@ -31,4 +46,4 @@ const fileToGenerativePart = async (file) => {
   }
 }
 
-export { isStorageExist, fileToGenerativePart }
+export { isStorageExist, geminiAIModels, fileToGenerativePart }
