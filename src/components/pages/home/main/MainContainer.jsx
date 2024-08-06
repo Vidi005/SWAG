@@ -436,8 +436,7 @@ class MainContainer extends React.Component {
 
   downloadAsHTML() {
     const htmlResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${this.state.responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
-    const normalizedHtml = htmlResponseResult.replace(/<style>[\s\S]*?<\/style>/gi, '<link rel="stylesheet" href="styles.css">').replace(/<script>[\s\S]*?<\/script>/gi, '<script src="scripts.js"></script>').replace(/<style>[\s\S]*?<\/style>/gi, '').trim()
-    const blob = new Blob([normalizedHtml], { type: 'text/html' })
+    const blob = new Blob([htmlResponseResult], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
