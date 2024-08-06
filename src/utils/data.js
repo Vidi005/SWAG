@@ -33,7 +33,7 @@ const fileToGenerativePart = async (file) => {
       reader.onerror = error => reject(error)
     })
     return {
-      inlineData: { data: base64EncodedDataPromise, mimeType: file.type }
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type }
     }
   } catch (error) {
     Swal.fire({

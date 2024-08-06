@@ -23,9 +23,11 @@ class MainContainer extends React.Component {
       isLoading: false,
       isEditing: false,
       isGenerating: false,
+      isSidebarOpened: false,
       currentPrompt: '',
       lastPrompt: '',
-      imgFile: null,
+      currentImgFile: null,
+      lastImgFile: null,
       abortController: null,
       filteredPrompt: this.props.t('filtered_prompt'),
       responseResult: '',
@@ -38,6 +40,7 @@ class MainContainer extends React.Component {
       userChatData: null
     }
     this.inputRef = React.createRef()
+    this.fileInputRef = React.createRef()
     this.iframeRef = React.createRef()
   }
 
@@ -67,7 +70,7 @@ class MainContainer extends React.Component {
     if (!this.state.isGenerating || !this.state.isLoading) {
       this.setState({ selectedModel: this.state.geminiAIModels.find(model => model.variant === selectedVariant) }, () => {
         localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
-        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ imgFile: null })
+        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFile: null, lastImgFile: null })
       })
     }
   }
@@ -84,7 +87,7 @@ class MainContainer extends React.Component {
     }
   }
 
-  pickImage(imgFiles) {
+  pickCurrentImage(imgFiles) {
     if (imgFiles.length === 0) return
     const file = imgFiles[0]
     const validImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'raw']
@@ -102,16 +105,45 @@ class MainContainer extends React.Component {
         return
       }
       if (validImageExtensions.includes(fileExtension)) {
-        this.setState({ imgFile: file })
+        this.setState({ currentImgFile: file })
       }
     }
   }
 
-  removeImage() {
-    this.setState({ imgFile: null })
+  pickLastImage(imgFiles) {
+    if (imgFiles.length === 0) return
+    const file = imgFiles[0]
+    const validImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'raw']
+    const fileExtension = file.name.split('.').pop().toLowerCase()
+    if (file) {
+      const maxFileSize = 10 * 1024 * 1024
+      if (file.size > maxFileSize) {
+        Swal.fire({
+          icon: 'error',
+          title: this.props.t('file_size_limit.0'),
+          text: this.props.t('file_size_limit.1'),
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
+        })
+        return
+      }
+      if (validImageExtensions.includes(fileExtension)) {
+        this.setState({ lastImgFile: file })
+      }
+    }
+  }
+
+  removeCurrentImage() {
+    this.setState({ currentImgFile: null })
   }
   
-  async postPrompt(model, userPrompt) {
+  removeLastImage() {
+    this.setState({ lastImgFile: null }, () => {
+      if (this.fileInputRef.current) this.fileInputRef.current.value = ''
+    })
+  }
+  
+  async postPrompt(model, userPrompt, inputImg) {
     try {
       const { totalTokens } = await model.countTokens(`${userPrompt}. ${this.state.filteredPrompt}`)
       if (totalTokens > 10000) {
@@ -120,11 +152,11 @@ class MainContainer extends React.Component {
           isLoading: false
         })
       } else {
-        this.setState({ lastPrompt: userPrompt })
+        this.setState({ lastPrompt: userPrompt, lastImgFile: inputImg })
         const abortController = new AbortController()
         this.setState({ abortController: abortController })
-        if (this.state.imgFile) {
-          const imageParts = await Promise.all([fileToGenerativePart(this.state.imgFile)])
+        if (inputImg) {
+          const imageParts = await Promise.all([fileToGenerativePart(inputImg)])
           const result = await model.generateContentStream([`${userPrompt}.\n${this.state.filteredPrompt}`, ...imageParts], { signal: abortController.signal })
           let text = ''
           for await (const chunk of result.stream) {
@@ -133,7 +165,7 @@ class MainContainer extends React.Component {
             text += chunkText
             this.setState({
               currentPrompt: '',
-              imgFile: null,
+              currentImgFile: null,
               responseResult: text,
               isLoading: false,
               isGenerating: true
@@ -149,7 +181,7 @@ class MainContainer extends React.Component {
             text += chunkText
             this.setState({
               currentPrompt: '',
-              imgFile: null,
+              currentImgFile: null,
               responseResult: text,
               isLoading: false,
               isGenerating: true
@@ -196,7 +228,7 @@ class MainContainer extends React.Component {
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
       const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
-      this.postPrompt(model, this.state.currentPrompt)
+      this.postPrompt(model, this.state.currentPrompt, this.state.currentImgFile)
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -232,7 +264,7 @@ class MainContainer extends React.Component {
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
       const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
-      this.postPrompt(model, this.state.lastPrompt)
+      this.postPrompt(model, this.state.lastPrompt, this.state.lastImgFile)
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -274,6 +306,36 @@ class MainContainer extends React.Component {
 
   onCancelHandler() {
     this.setState({ isEditing: false })
+  }
+
+  toggleSidebar() {
+    this.setState({ isSidebarOpened: !this.state.isSidebarOpened })
+  }
+
+  closeSidebar() {
+    this.setState({ isSidebarOpened: false })
+  }
+
+  deleteAllPrompts() {
+    Swal.fire({
+      icon: 'warning',
+      title: this.props.t('clear_all_histories.0'),
+      text: this.props.t('clear_all_histories.1'),
+      confirmButtonColor: 'blue',
+      cancelButtonColor: "red",
+      confirmButtonText: this.props.t('ok'),
+      cancelButtonText: this.props.t('cancel'),
+      showCancelButton: true
+    }, result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
+        this.setState({ responseResult: '' })
+      }
+    })
+  }
+
+  deleteSelectedPrompt() {
+    this.setState({ responseResult: '' })
   }
 
   copyToClipboard(languageType) {
@@ -437,16 +499,23 @@ class MainContainer extends React.Component {
           <PromptContainer
             t={this.props.t}
             state={this.state}
+            fileInputRef={this.fileInputRef}
             changeGeminiModel={this.changeGeminiModel.bind(this)}
             handleCurrentPromptChange={this.handleCurrentPromptChange.bind(this)}
             handleLastPromptChange={this.handleLastPromptChange.bind(this)}
-            pickImage={this.pickImage.bind(this)}
-            removeImage={this.removeImage.bind(this)}
+            pickCurrentImage={this.pickCurrentImage.bind(this)}
+            pickLastImage={this.pickLastImage.bind(this)}
+            removeCurrentImage={this.removeCurrentImage.bind(this)}
+            removeLastImage={this.removeLastImage.bind(this)}
             generatePrompt={this.generatePrompt.bind(this)}
             regeneratePrompt={this.regeneratePrompt.bind(this)}
             stopPrompt={this.stopPrompt.bind(this)}
             onEditHandler={this.onEditHandler.bind(this)}
             onCancelHandler={this.onCancelHandler.bind(this)}
+            toggleSidebar={this.toggleSidebar.bind(this)}
+            closeSidebar={this.closeSidebar.bind(this)}
+            deleteAllPrompts={this.deleteAllPrompts.bind(this)}
+            deleteSelectedPrompt={this.deleteSelectedPrompt.bind(this)}
           />
           <PreviewContainer
             t={this.props.t}
