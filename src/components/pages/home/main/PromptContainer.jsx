@@ -94,7 +94,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
             isGenerating={state.isGenerating}
             genAIInput={state.selectedModel?.input}
             pickCurrentImage={pickCurrentImage}
-            currentImgFile={state.currentImgFile}
+            currentImgURL={state.currentImgURL}
             removeCurrentImage={removeCurrentImage}
           />
           <div className="flex items-center justify-between w-full pt-1">

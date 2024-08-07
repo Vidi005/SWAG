@@ -27,6 +27,7 @@ class MainContainer extends React.Component {
       currentPrompt: '',
       lastPrompt: '',
       currentImgFile: null,
+      currentImgURL: null,
       lastImgFile: null,
       abortController: null,
       filteredPrompt: this.props.t('filtered_prompt'),
@@ -53,6 +54,9 @@ class MainContainer extends React.Component {
 
   componentDidUpdate(_prevProps, prevState) {
     if (prevState.responseResult !== this.state.responseResult) this.scrollToBottom()
+    if (prevState.currentImgFile !== this.state.currentImgFile && this.state.currentImgFile !== null) {
+      this.setState({ currentImgURL: URL.createObjectURL(this.state.currentImgFile) })
+    }
   }
 
   componentWillUnmount() {
@@ -70,7 +74,7 @@ class MainContainer extends React.Component {
     if (!this.state.isGenerating || !this.state.isLoading) {
       this.setState({ selectedModel: this.state.geminiAIModels.find(model => model.variant === selectedVariant) }, () => {
         localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
-        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFile: null, lastImgFile: null })
+        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFile: null, currentImgURL: null, lastImgFile: null })
       })
     }
   }
@@ -134,7 +138,7 @@ class MainContainer extends React.Component {
   }
 
   removeCurrentImage() {
-    this.setState({ currentImgFile: null })
+    this.setState({ currentImgFile: null, currentImgURL: null })
   }
   
   removeLastImage() {
@@ -166,6 +170,7 @@ class MainContainer extends React.Component {
             this.setState({
               currentPrompt: '',
               currentImgFile: null,
+              currentImgURL: null,
               responseResult: text,
               isLoading: false,
               isGenerating: true
@@ -182,6 +187,7 @@ class MainContainer extends React.Component {
             this.setState({
               currentPrompt: '',
               currentImgFile: null,
+              currentImgURL: null,
               responseResult: text,
               isLoading: false,
               isGenerating: true
