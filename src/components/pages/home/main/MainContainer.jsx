@@ -7,7 +7,7 @@ import Swal from "sweetalert2"
 import HtmlCodeContainer from "./HtmlCodeContainer"
 import CssCodeContainer from "./CssCodeContainer"
 import JsCodeContainer from "./JsCodeContainer"
-import { fileToGenerativePart, geminiAIModels, isStorageExist } from "../../../../utils/data"
+import { fileToGenerativePart, geminiAIModels, getUserPrompt, isStorageExist } from "../../../../utils/data"
 import DownloadFileModal from "../pop_up/DownloadFileModal"
 import JSZip from "jszip"
 
@@ -16,8 +16,11 @@ class MainContainer extends React.Component {
     super(props)
     this.state = {
       GEMINI_AI_MODEL_STORAGE_KEY: 'GEMINI_AI_MODEL_STORAGE_KEY',
-      USER_CHATS_STORAGE_KEY: 'USER_CHATS_STORAGE_KEY',
+      CHUNKED_PROMPTS_STORAGE_KEY: 'CHUNKED_PROMPTS_STORAGE_KEY',
+      USER_PROMPTS_STORAGE_KEY: 'USER_PROMPTS_STORAGE_KEY',
+      USER_RESULTS_STORAGE_KEY: 'USER_RESULTS_STORAGE_KEY',
       TEMP_WEB_PREVIEW_STORAGE_KEY: 'TEMP_WEB_PREVIEW_STORAGE_KEY',
+      savedApiKey: localStorage.getItem('USER_API_STORAGE_KEY'),
       geminiAIModels: geminiAIModels,
       selectedModel: geminiAIModels[1],
       isLoading: false,
@@ -26,6 +29,8 @@ class MainContainer extends React.Component {
       isSidebarOpened: false,
       currentPrompt: '',
       lastPrompt: '',
+      promptId: 0,
+      chunkedPromptsData: [],
       currentImgFile: null,
       currentImgURL: null,
       lastImgFile: null,
@@ -47,6 +52,7 @@ class MainContainer extends React.Component {
 
   componentDidMount() {
     this.loadSavedGeminiModel()
+    this.loadChunkedPrompts().then(() => this.loadPromptAndResult())
     addEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
@@ -70,10 +76,127 @@ class MainContainer extends React.Component {
     this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
   }
 
+  async loadChunkedPrompts() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      const chunkedPrompts = localStorage.getItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+      try {
+        const parsedChunkedPrompts = await JSON.parse(chunkedPrompts)
+        if (parsedChunkedPrompts !== null) {
+          this.setState({ chunkedPromptsData: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt) })
+        }
+      } catch (error) {
+        localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
+        alert(`${this.props.t('error_alert')}: ${error.message}\n${this.props.t('error_solution')}.`)
+      }
+    }
+  }
+
+  loadPromptAndResult() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey && location.toString().includes('?id=')) {
+      let userPrompts = localStorage.getItem(this.state.USER_PROMPTS_STORAGE_KEY)
+      let userResults = localStorage.getItem(this.state.USER_RESULTS_STORAGE_KEY)
+      try {
+        let parsedUserPrompts = JSON.parse(userPrompts)
+        let parsedUserResults = JSON.parse(userResults)
+        if (parsedUserPrompts !== null && parsedUserPrompts[0].id !== undefined) {
+          const foundPrompt = parsedUserPrompts.find(prompt => prompt.id === getUserPrompt())
+          if (foundPrompt) {
+            this.setState({ lastPrompt: foundPrompt?.prompt }, () => {
+              userPrompts = null
+              parsedUserPrompts = null
+            })
+          } else {
+            userPrompts = null
+            parsedUserPrompts = null
+            Swal.fire({
+              icon: 'error',
+              title: this.props.t('prompt_not_found'),
+              text: this.props.t('prompt_not_found_text'),
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
+            })
+          }
+        }
+        if (parsedUserResults !== null && parsedUserResults[0].id !== undefined) {
+          const foundResult = parsedUserResults.find(result => result.id === getUserPrompt())
+          if (foundResult) {
+            this.setState({ responseResult: foundResult?.result }, () => {
+              userResults = null
+              parsedUserResults = null
+            })
+          } else {
+            userResults = null
+            parsedUserResults = null
+            Swal.fire({
+              icon: 'error',
+              title: this.props.t('result_not_found'),
+              text: this.props.t('result_not_found_text'),
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
+            })
+          }
+        }
+      } catch (error) {
+        userPrompts = null
+        userResults = null
+        localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
+        alert(`${this.props.t('error_alert')}: ${error.message}\n${this.props.t('error_solution')}.`)
+      }
+    }
+  }
+
+  loadAllPrompts() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      let userPrompts = localStorage.getItem(this.state.USER_PROMPTS_STORAGE_KEY)
+      try {
+        const parsedUserPrompts = JSON.parse(userPrompts)
+        if (parsedUserPrompts !== null && parsedUserPrompts[0].id !== undefined) {
+          return parsedUserPrompts
+        } else {
+          return []
+        }
+      } catch (error) {
+        userPrompts = null
+        localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
+        alert(`${this.props.t('error_alert')}: ${error.message}\n${this.props.t('error_solution')}.`)
+        return null
+      }
+    }
+  }
+
+  loadAllResults() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      let userResults = localStorage.getItem(this.state.USER_RESULTS_STORAGE_KEY)
+      try {
+        const parsedUserResults = JSON.parse(userResults)
+        if (parsedUserResults !== null && parsedUserResults[0].id !== undefined) {
+          return parsedUserResults
+        } else {
+          return []
+        }
+      } catch (error) {
+        userResults = null
+        localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
+        alert(`${this.props.t('error_alert')}: ${error.message}\n${this.props.t('error_solution')}.`)
+        return null
+      }
+    }
+  }
+
   changeGeminiModel(selectedVariant) {
     if (!this.state.isGenerating || !this.state.isLoading) {
       this.setState({ selectedModel: this.state.geminiAIModels.find(model => model.variant === selectedVariant) }, () => {
-        localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
+        if (isStorageExist(this.props.t('browser_warning'))) {
+          localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
+        }
         if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFile: null, currentImgURL: null, lastImgFile: null })
       })
     }
@@ -156,7 +279,7 @@ class MainContainer extends React.Component {
           isLoading: false
         })
       } else {
-        this.setState({ lastPrompt: userPrompt, lastImgFile: inputImg })
+        this.setState({ lastPrompt: userPrompt, lastImgFile: inputImg }, () => this.saveUserPromptData())
         const abortController = new AbortController()
         this.setState({ abortController: abortController })
         if (inputImg) {
@@ -176,7 +299,7 @@ class MainContainer extends React.Component {
               isGenerating: true
             })
           }
-          this.setState({ isGenerating: false })
+          this.setState({ isGenerating: false }, () => this.saveUserResultData())
         } else {
           const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`, { signal: abortController.signal })
           let text = ''
@@ -193,7 +316,7 @@ class MainContainer extends React.Component {
               isGenerating: true
             })
           }
-          this.setState({ isGenerating: false })
+          this.setState({ isGenerating: false }, () => this.saveUserResultData())
         }
       }      
     } catch (error) {
@@ -206,7 +329,7 @@ class MainContainer extends React.Component {
           confirmButtonText: this.props.t('ok')
         })
       }
-      this.setState({ isLoading: false, isGenerating: false })
+      this.setState({ isLoading: false, isGenerating: false }, () => this.saveUserResultData())
     }
   }
 
@@ -306,6 +429,76 @@ class MainContainer extends React.Component {
     }
   }
 
+  saveUserPromptData() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      this.setState({ promptId: +new Date() }, () => {
+        const chunkedPromptsData = this.state.chunkedPromptsData.map(chunkedPrompt => ({ ...chunkedPrompt }))
+        let chunkedPrompt = this.state.lastPrompt
+        if (this.state.lastPrompt.length > 50) chunkedPrompt = `${this.state.lastPrompt.slice(0, 50)}...`
+        const foundChunkedPrompt = chunkedPromptsData.find(chunkedPrompt => chunkedPrompt.id === getUserPrompt())
+        if (foundChunkedPrompt) {
+          chunkedPromptsData[chunkedPromptsData.indexOf(foundChunkedPrompt)] = {
+            id: foundChunkedPrompt.id,
+            promptChunk: chunkedPrompt,
+            updatedAt: +new Date()
+          }
+        } else chunkedPromptsData.push({
+          id: this.state.promptId,
+          promptChunk: chunkedPrompt,
+          updatedAt: +new Date()
+        })
+        chunkedPromptsData.sort((a, b) => b.updatedAt - a.updatedAt)
+        localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(chunkedPromptsData))
+        if (this.loadAllPrompts() !== null) {
+          const userPromptsData = this.loadAllPrompts().map(userPrompt => ({ ...userPrompt }))
+          const foundUserPrompt = userPromptsData.find(userPrompt => userPrompt.id === getUserPrompt())
+          if (foundUserPrompt) {
+            userPromptsData[userPromptsData.indexOf(foundUserPrompt)] = {
+              id: foundUserPrompt.id,
+              prompt: this.state.lastPrompt
+            }
+          } else userPromptsData.push({ id: this.state.promptId, prompt: this.state.lastPrompt })
+          localStorage.setItem(this.state.USER_PROMPTS_STORAGE_KEY, JSON.stringify(userPromptsData))
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: this.props.t('add_prompt_fail.0'),
+            text: this.props.t('add_prompt_fail.1'),
+            confirmButtonColor: 'blue',
+            confirmButtonText: this.props.t('ok')
+          })
+        }
+      })
+    }
+  }
+
+  saveUserResultData() {
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      if (this.loadAllResults() !== null) {
+        const userResultsData = this.loadAllResults().map(userResult => ({ ...userResult }))
+        const foundUserResult = userResultsData.find(userResult => userResult.id === getUserPrompt())
+        if (foundUserResult) {
+          userResultsData[userResultsData.indexOf(foundUserResult)] = {
+            id: foundUserResult.id,
+            result: this.state.responseResult
+          }
+        } else {
+          userResultsData.push({ id: this.state.promptId, result: this.state.responseResult })
+        }
+        localStorage.setItem(this.state.USER_RESULTS_STORAGE_KEY, JSON.stringify(userResultsData))
+        this.loadChunkedPrompts().then(() => this.loadPromptAndResult())
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: this.props.t('add_result_fail.0'),
+          text: this.props.t('add_result_fail.1'),
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
+        })
+      }
+    }
+  }
+
   onEditHandler() {
     this.setState({ isEditing: true })
   }
@@ -332,10 +525,18 @@ class MainContainer extends React.Component {
       confirmButtonText: this.props.t('ok'),
       cancelButtonText: this.props.t('cancel'),
       showCancelButton: true
-    }, result => {
+    }).then(result => {
       if (result.isConfirmed) {
-        localStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
-        this.setState({ responseResult: '' })
+        localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
+        this.setState({
+          currentPrompt: '',
+          lastPrompt: '',
+          promptId: 0,
+          chunkedPromptsData: [],
+          responseResult: ''
+        }, () => this.closeSidebar())
       }
     })
   }
@@ -461,8 +662,8 @@ class MainContainer extends React.Component {
     const blob = new Blob([this.state.responseResult], { type: 'application/zip' })
     const url = URL.createObjectURL(blob)
     zip.file('index.html', normalizedHtml)
-    zip.file('styles.css', cssOnly)
-    zip.file('scripts.js', jsOnly)
+    if (this.state.responseResult.includes('<style>')) zip.file('styles.css', cssOnly)
+    if (this.state.responseResult.includes('<script>'))zip.file('scripts.js', jsOnly)
     zip.generateAsync({ type: 'blob' }).then(content => {
       const zipFile = new Blob([content], { type: 'application/zip' })
       const link = document.createElement('a')

@@ -15,7 +15,8 @@ class App extends React.Component {
       LANGUAGE_STORAGE_KEY: 'SWAG_LANG_STORAGE_KEY',
       DARK_MODE_STORAGE_KEY: 'SWAG_DARK_MODE_STORAGE_KEY',
       USER_API_STORAGE_KEY: 'USER_API_STORAGE_KEY',
-      USER_CHATS_STORAGE_KEY: 'USER_CHATS_STORAGE_KEY',
+      USER_PROMPTS_STORAGE_KEY: 'USER_PROMPTS_STORAGE_KEY',
+      USER_RESULTS_STORAGE_KEY: 'USER_RESULTS_STORAGE_KEY',
       selectedLanguage: 'en',
       userName: '',
       geminiApiKey: null,
@@ -170,9 +171,9 @@ class App extends React.Component {
     }).then(result => {
       if (result.isConfirmed) {
         sessionStorage.removeItem(this.state.USER_API_STORAGE_KEY)
-        sessionStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
+        sessionStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_API_STORAGE_KEY)
-        localStorage.removeItem(this.state.USER_CHATS_STORAGE_KEY)
+        localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         location.reload()
       }
     })
@@ -195,23 +196,36 @@ class App extends React.Component {
           <link rel="canonical" href={location.toString()} />
         </Helmet>
         <Routes>
-          <>
-            <Route path="/" element={
-              <HomePage
-                t={i18n.t}
-                state={this.state}
-                setDisplayMode={this.setDisplayMode.bind(this)}
-                changeLanguage={this.changeLanguage.bind(this)}
-                handleNameChange={this.handleNameChange.bind(this)}
-                handleApiKeyChange={this.handleApiKeyChange.bind(this)}
-                onFocusHandler={this.onFocusHandler.bind(this)}
-                onBlurHandler={this.onBlurHandler.bind(this)}
-                changeUserDataSetting={this.changeUserDataSetting.bind(this)}
-                saveUserData={this.saveUserData.bind(this)}
-                resetUserData={this.resetUserData.bind(this)}
-              />
-            }/>
-          </>
+          <Route path="/" element={
+            <HomePage
+              t={i18n.t}
+              state={this.state}
+              setDisplayMode={this.setDisplayMode.bind(this)}
+              changeLanguage={this.changeLanguage.bind(this)}
+              handleNameChange={this.handleNameChange.bind(this)}
+              handleApiKeyChange={this.handleApiKeyChange.bind(this)}
+              onFocusHandler={this.onFocusHandler.bind(this)}
+              onBlurHandler={this.onBlurHandler.bind(this)}
+              changeUserDataSetting={this.changeUserDataSetting.bind(this)}
+              saveUserData={this.saveUserData.bind(this)}
+              resetUserData={this.resetUserData.bind(this)}
+            />
+          }/>
+          <Route path="/prompt" element={
+            <HomePage
+              t={i18n.t}
+              state={this.state}
+              setDisplayMode={this.setDisplayMode.bind(this)}
+              changeLanguage={this.changeLanguage.bind(this)}
+              handleNameChange={this.handleNameChange.bind(this)}
+              handleApiKeyChange={this.handleApiKeyChange.bind(this)}
+              onFocusHandler={this.onFocusHandler.bind(this)}
+              onBlurHandler={this.onBlurHandler.bind(this)}
+              changeUserDataSetting={this.changeUserDataSetting.bind(this)}
+              saveUserData={this.saveUserData.bind(this)}
+              resetUserData={this.resetUserData.bind(this)}
+            />
+          }/>
           <Route path="/preview" element={<FullPreviewPage t={i18n.t}/>}/>
           <Route path="*" element={<NoPage t={i18n.t}/>}/>
         </Routes>

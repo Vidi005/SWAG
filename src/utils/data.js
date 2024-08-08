@@ -24,6 +24,17 @@ const geminiAIModels = [
   }
 ]
 
+const getUserPrompt = () => {
+  const queryStr = location.search
+  const urlParams = new URLSearchParams(queryStr)
+  const idParam = urlParams.get('id')
+  if (isNaN(Number(idParam))) {
+    return null
+  } else {
+    return Number(idParam)
+  }
+}
+
 const fileToGenerativePart = async (file) => {
   try {
     const base64EncodedDataPromise = new Promise((resolve, reject) => {
@@ -46,4 +57,4 @@ const fileToGenerativePart = async (file) => {
   }
 }
 
-export { isStorageExist, geminiAIModels, fileToGenerativePart }
+export { isStorageExist, geminiAIModels, getUserPrompt, fileToGenerativePart }
