@@ -31,6 +31,8 @@ class MainContainer extends React.Component {
       lastPrompt: '',
       promptId: 0,
       chunkedPromptsData: [],
+      getSortedChunkedPrompts: [],
+      sortBy: this.props.t('sort_chunked_prompt.0'),
       currentImgFile: null,
       currentImgURL: null,
       lastImgFile: null,
@@ -52,16 +54,27 @@ class MainContainer extends React.Component {
 
   componentDidMount() {
     this.loadSavedGeminiModel()
-    this.loadChunkedPrompts().then(() => this.loadPromptAndResult())
+    this.loadChunkedPrompts().then(() => {
+      if (location.toString().includes('/prompt') && location.toString().includes('?id=')) this.loadPromptAndResult()
+    })
+    setTimeout(() => {
+      this.setState({
+        sortBy: this.props.t('sort_chunked_prompt.0'),
+        getSortedChunkedPrompts: this.state.chunkedPromptsData
+      })
+    }, 10)
     addEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
   }
 
-  componentDidUpdate(_prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevState.responseResult !== this.state.responseResult) this.scrollToBottom()
     if (prevState.currentImgFile !== this.state.currentImgFile && this.state.currentImgFile !== null) {
       this.setState({ currentImgURL: URL.createObjectURL(this.state.currentImgFile) })
+    }
+    if (prevProps.t('sort_chunked_prompt.0') !== this.props.t('sort_chunked_prompt.0')) {
+      this.setState({ sortBy: this.props.t('sort_chunked_prompt.0') })
     }
   }
 
@@ -74,6 +87,35 @@ class MainContainer extends React.Component {
   loadSavedGeminiModel() {
     const geminiAIModel = localStorage.getItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY) || this.state.selectedModel.variant
     this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
+  }
+
+  searchHandler(event) {
+    scrollTo(0, 0)
+    const searchQuery = event.target.value.toLowerCase()
+    const { sortBy } = this.state
+    const chunkedPromptList = this.state.chunkedPromptsData
+    if (searchQuery.length === 0) this.sortHandler(sortBy)
+    else {
+      let searchData = chunkedPromptList
+      if (sortBy !== this.props.t('sort_chunked_prompt.0')) {
+        searchData = chunkedPromptList.filter(chunkedPrompt => 
+          chunkedPrompt.promptChunk === sortBy
+        )
+      }
+      searchData = searchData.filter(chunkedPrompt => chunkedPrompt.promptChunk.toLowerCase().includes(searchQuery))
+      this.setState({ getSortedChunkedPrompts: searchData })
+    }
+  }
+
+  sortHandler(sortBy) {
+    const chunkedPromptList = this.state.chunkedPromptsData.map(chunkedPrompt => ({ ...chunkedPrompt }))
+    if (sortBy === this.props.t('sort_chunked_prompts.0')) {
+      this.setState({ getSortedChunkedPrompts: chunkedPromptList })
+    } else {
+      const sortedChunkedPrompts = chunkedPromptList.sort((a, b) => b.id - a.id)
+      this.setState({ getSortedChunkedPrompts: sortedChunkedPrompts })
+    }
+    this.setState({ sortBy: sortBy })
   }
 
   async loadChunkedPrompts() {
@@ -103,7 +145,7 @@ class MainContainer extends React.Component {
         if (parsedUserPrompts !== null && parsedUserPrompts[0].id !== undefined) {
           const foundPrompt = parsedUserPrompts.find(prompt => prompt.id === getUserPrompt())
           if (foundPrompt) {
-            this.setState({ lastPrompt: foundPrompt?.prompt }, () => {
+            this.setState({ promptId: foundPrompt?.id, lastPrompt: foundPrompt?.prompt }, () => {
               userPrompts = null
               parsedUserPrompts = null
             })
@@ -116,7 +158,7 @@ class MainContainer extends React.Component {
               text: this.props.t('prompt_not_found_text'),
               confirmButtonColor: 'blue',
               confirmButtonText: this.props.t('ok')
-            })
+            }).then(() => history.pushState('', '', location.origin))
           }
         }
         if (parsedUserResults !== null && parsedUserResults[0].id !== undefined) {
@@ -135,7 +177,7 @@ class MainContainer extends React.Component {
               text: this.props.t('result_not_found_text'),
               confirmButtonColor: 'blue',
               confirmButtonText: this.props.t('ok')
-            })
+            }).then(() => history.pushState('', '', location.origin))
           }
         }
       } catch (error) {
@@ -145,6 +187,7 @@ class MainContainer extends React.Component {
         localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
         alert(`${this.props.t('error_alert')}: ${error.message}\n${this.props.t('error_solution')}.`)
+        history.pushState('', '', location.origin)
       }
     }
   }
@@ -334,6 +377,7 @@ class MainContainer extends React.Component {
   }
 
   generatePrompt() {
+    history.pushState('', '', location.origin)
     try {
       this.setState({
         isLoading: true,
@@ -486,7 +530,7 @@ class MainContainer extends React.Component {
           userResultsData.push({ id: this.state.promptId, result: this.state.responseResult })
         }
         localStorage.setItem(this.state.USER_RESULTS_STORAGE_KEY, JSON.stringify(userResultsData))
-        this.loadChunkedPrompts().then(() => this.loadPromptAndResult())
+        this.loadChunkedPrompts().then(() => this.loadPromptAndResult()).finally(() => window.history.pushState('', '', `prompt?id=${this.state.promptId}`))
       } else {
         Swal.fire({
           icon: 'error',
@@ -512,7 +556,14 @@ class MainContainer extends React.Component {
   }
 
   closeSidebar() {
-    this.setState({ isSidebarOpened: false })
+    this.setState({ isSidebarOpened: false, getSortedChunkedPrompts: this.state.chunkedPromptsData }, () => {
+      if (this.state.promptId !== getUserPrompt()) {
+        this.removeCurrentImage()
+        this.removeLastImage()
+        this.loadPromptAndResult()
+        this.setState({ isEditing: false, currentPrompt: '' })
+      }
+    })
   }
 
   deleteAllPrompts() {
@@ -531,18 +582,53 @@ class MainContainer extends React.Component {
         localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)
         this.setState({
-          currentPrompt: '',
           lastPrompt: '',
           promptId: 0,
           chunkedPromptsData: [],
+          getSortedChunkedPrompts: [],
           responseResult: ''
         }, () => this.closeSidebar())
       }
     })
   }
 
-  deleteSelectedPrompt() {
-    this.setState({ responseResult: '' })
+  deleteSelectedPrompt(promptId) {
+    Swal.fire({
+      icon: 'warning',
+      title: this.props.t('clear_history.0'),
+      text: this.props.t('clear_history.1'),
+      confirmButtonColor: 'blue',
+      cancelButtonColor: "red",
+      confirmButtonText: this.props.t('ok'),
+      cancelButtonText: this.props.t('cancel'),
+      showCancelButton: true
+    }).then(result => {
+      if (result.isConfirmed) {
+        const userPromptsData = this.loadAllPrompts().filter(userPrompt => userPrompt.id !== promptId)
+        const userResultsData = this.loadAllResults().filter(userResult => userResult.id !== promptId)
+        if (getUserPrompt() === promptId) {
+          this.setState({
+            lastPrompt: '',
+            promptId: 0,
+            chunkedPromptsData: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId),
+            responseResult: ''
+          }, () => {
+            localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(this.state.chunkedPromptsData))
+            localStorage.setItem(this.state.USER_PROMPTS_STORAGE_KEY, JSON.stringify(userPromptsData))
+            localStorage.setItem(this.state.USER_RESULTS_STORAGE_KEY, JSON.stringify(userResultsData))
+            history.pushState('', '', location.origin)
+            })
+        } else {
+          this.setState({
+            chunkedPromptsData: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId)
+          }, () => {
+            localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(this.state.chunkedPromptsData))
+            localStorage.setItem(this.state.USER_PROMPTS_STORAGE_KEY, JSON.stringify(userPromptsData))
+            localStorage.setItem(this.state.USER_RESULTS_STORAGE_KEY, JSON.stringify(userResultsData))
+          })
+        }
+      }
+    })
   }
 
   copyToClipboard(languageType) {
@@ -719,6 +805,7 @@ class MainContainer extends React.Component {
             onEditHandler={this.onEditHandler.bind(this)}
             onCancelHandler={this.onCancelHandler.bind(this)}
             toggleSidebar={this.toggleSidebar.bind(this)}
+            searchHandler={this.searchHandler.bind(this)}
             closeSidebar={this.closeSidebar.bind(this)}
             deleteAllPrompts={this.deleteAllPrompts.bind(this)}
             deleteSelectedPrompt={this.deleteSelectedPrompt.bind(this)}

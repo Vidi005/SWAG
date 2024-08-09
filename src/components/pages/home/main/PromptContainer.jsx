@@ -3,7 +3,7 @@ import DropZoneContainer from "./DropZoneContainer"
 import { Listbox, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
       <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
@@ -63,7 +63,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
                 {
                   state.isEditing
                     ? (
-                        <div className="flex flex-col flex-auto h-0 items-end justify-end w-full px-12 py-2 duration-200 overflow-y-auto" onClick={closeSidebar}>
+                        <div className="flex flex-col flex-auto h-0 items-end justify-end w-full px-12 py-2 duration-200 overflow-y-auto">
                           <textarea onChange={handleLastPromptChange} value={state.lastPrompt} className="grow w-full border border-cyan-900 dark:border-none bg-cyan-100 dark:bg-gray-700 p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 overflow-x-hidden overflow-y-auto rounded-md" required></textarea>
                           <span className="flex pt-1 items-center text-cyan-900 dark:text-white">
                             <input ref={fileInputRef} className="max-w-max text-cyan-700 dark:text-gray-200 truncate duration-200" id="last-image-picker" type="file" accept="image/*" onChange={(e) => pickLastImage(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
@@ -76,7 +76,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
                         </div>
                       )
                     : (
-                      <div className="group flex flex-col items-end justify-end flex-auto h-0 w-full px-12 py-2 duration-200" onClick={closeSidebar}>
+                      <div className="group flex flex-col items-end justify-end flex-auto h-0 w-full px-12 py-2 duration-200">
                         <p className="bg-white dark:bg-gray-700 max-h-full max-w-full p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 shadow-md rounded-md dark:shadow-white/50 overflow-x-hidden overflow-y-auto">{state.lastPrompt}</p>
                         <span className="h-8 mt-1 lg:group-hover:hidden"></span>
                         <button title="Edit" className="block lg:hidden lg:group-hover:block hover:bg-cyan-200 dark:hover:bg-gray-500 h-7 mt-1 p-1 rounded-md duration-200" onClick={onEditHandler}>
@@ -87,7 +87,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
                 }
               </React.Fragment>
         }
-        <div className="flex flex-col items-stretch justify-between w-full h-1/2 p-1 overflow-y-auto" onClick={closeSidebar}>
+        <div className="flex flex-col items-stretch justify-between w-full h-1/2 p-1 overflow-y-auto">
           <DropZoneContainer
             t={t}
             isLoading={state.isLoading}
@@ -124,6 +124,9 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
         <SidebarContainer
           t={t}
           isSidebarOpened={state.isSidebarOpened}
+          chunkedPrompts={state.getSortedChunkedPrompts}
+          searchInput={state.searchInput}
+          searchHandler={searchHandler}
           closeSidebar={closeSidebar}
           deleteSelectedPrompt={deleteSelectedPrompt}
           deleteAllPrompts={deleteAllPrompts}
