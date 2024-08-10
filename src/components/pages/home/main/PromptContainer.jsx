@@ -3,7 +3,7 @@ import DropZoneContainer from "./DropZoneContainer"
 import { Listbox, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
       <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
@@ -26,7 +26,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
             leaveFrom="transform opacity-100 scale-100 translate-y-0"
             leaveTo="transform opacity-0 scale-95 -translate-y-1/4"
           >
-            <Listbox.Options className="absolute max-h-96 flex flex-col items-center bg-cyan-100 dark:bg-gray-700 origin-top-right right-0 lg:right-1/2 mt-1 mr-2 p-1 ring-1 ring-cyan-900/50 dark:ring-white/50 rounded-md shadow-md dark:shadow-white/50 overflow-y-auto z-10">
+            <Listbox.Options className="absolute max-h-96 flex flex-col items-center bg-cyan-100/50 dark:bg-gray-700/50 origin-top-right right-0 lg:right-1/2 mt-1 mr-2 p-1 ring-1 ring-cyan-900/50 dark:ring-white/50 backdrop-blur-sm rounded-md shadow-md dark:shadow-white/50 overflow-y-auto z-10">
               {state.geminiAIModels.map(model => (
                 <Listbox.Option
                   key={model.variant}
@@ -52,9 +52,11 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
       </Listbox>
     </section>
     <div className="prompt-container flex flex-nowrap items-stretch grow p-2">
-      <button className={"inline-flex items-center justify-center w-8 mb-auto pr-1 hover:bg-black/25 dark:hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-black/75 focus-visible:dark:ring-white/75 duration-200 rounded-md animate__animated animate__fadeInLeft"} title="Sidebar" onClick={toggleSidebar}>
-        <img className="object-contain w-full invert dark:invert-0 duration-200" src={state.isSidebarOpened ? `${import.meta.env.BASE_URL}images/close-sidebar-icon.svg` : `${import.meta.env.BASE_URL}images/view-sidebar-icon.svg`} alt={state.isSidebarOpened ? "Close Sidebar" : "View Sidebar"} />
-      </button>
+      {state.savedApiKey && (
+        <button className={"inline-flex items-center justify-center w-8 mb-auto pr-1 hover:bg-black/25 dark:hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-black/75 focus-visible:dark:ring-white/75 duration-200 rounded-md animate__animated animate__fadeInLeft"} title="Sidebar" onClick={toggleSidebar}>
+          <img className="object-contain w-full invert dark:invert-0 duration-200" src={state.isSidebarOpened ? `${import.meta.env.BASE_URL}images/close-sidebar-icon.svg` : `${import.meta.env.BASE_URL}images/view-sidebar-icon.svg`} alt={state.isSidebarOpened ? "Close Sidebar" : "View Sidebar"} />
+        </button>
+      )}
       <div className="relative w-0 flex-auto flex flex-col h-full items-center justify-end bg-cyan-50 dark:bg-gray-900 rounded shadow-inner duration-200">
         {
           state.lastPrompt.length < 1
@@ -124,9 +126,11 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
         <SidebarContainer
           t={t}
           isSidebarOpened={state.isSidebarOpened}
+          sortBy={state.sortBy}
           chunkedPrompts={state.getSortedChunkedPrompts}
           searchInput={state.searchInput}
           searchHandler={searchHandler}
+          sortHandler={sortHandler}
           closeSidebar={closeSidebar}
           deleteSelectedPrompt={deleteSelectedPrompt}
           deleteAllPrompts={deleteAllPrompts}

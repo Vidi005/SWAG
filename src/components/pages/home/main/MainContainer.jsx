@@ -32,7 +32,7 @@ class MainContainer extends React.Component {
       promptId: 0,
       chunkedPromptsData: [],
       getSortedChunkedPrompts: [],
-      sortBy: this.props.t('sort_chunked_prompt.0'),
+      sortBy: this.props.t('sort_chunked_prompts.0'),
       currentImgFile: null,
       currentImgURL: null,
       lastImgFile: null,
@@ -56,13 +56,13 @@ class MainContainer extends React.Component {
     this.loadSavedGeminiModel()
     this.loadChunkedPrompts().then(() => {
       if (location.toString().includes('/prompt') && location.toString().includes('?id=')) this.loadPromptAndResult()
+      setTimeout(() => {
+        this.setState({
+          sortBy: this.props.t('sort_chunked_prompts.0'),
+          getSortedChunkedPrompts: this.state.chunkedPromptsData
+        })
+      }, 10)
     })
-    setTimeout(() => {
-      this.setState({
-        sortBy: this.props.t('sort_chunked_prompt.0'),
-        getSortedChunkedPrompts: this.state.chunkedPromptsData
-      })
-    }, 10)
     addEventListener('beforeunload', () => {
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
@@ -73,8 +73,8 @@ class MainContainer extends React.Component {
     if (prevState.currentImgFile !== this.state.currentImgFile && this.state.currentImgFile !== null) {
       this.setState({ currentImgURL: URL.createObjectURL(this.state.currentImgFile) })
     }
-    if (prevProps.t('sort_chunked_prompt.0') !== this.props.t('sort_chunked_prompt.0')) {
-      this.setState({ sortBy: this.props.t('sort_chunked_prompt.0') })
+    if (prevProps.t('sort_chunked_prompts.0') !== this.props.t('sort_chunked_prompts.0')) {
+      this.setState({ sortBy: this.props.t('sort_chunked_prompts.0') })
     }
   }
 
@@ -97,7 +97,7 @@ class MainContainer extends React.Component {
     if (searchQuery.length === 0) this.sortHandler(sortBy)
     else {
       let searchData = chunkedPromptList
-      if (sortBy !== this.props.t('sort_chunked_prompt.0')) {
+      if (sortBy !== this.props.t('sort_chunked_prompts.0')) {
         searchData = chunkedPromptList.filter(chunkedPrompt => 
           chunkedPrompt.promptChunk === sortBy
         )
@@ -124,7 +124,10 @@ class MainContainer extends React.Component {
       try {
         const parsedChunkedPrompts = await JSON.parse(chunkedPrompts)
         if (parsedChunkedPrompts !== null) {
-          this.setState({ chunkedPromptsData: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt) })
+          this.setState({
+            chunkedPromptsData: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt),
+            getSortedChunkedPrompts: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt)
+          })
         }
       } catch (error) {
         localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
@@ -154,8 +157,8 @@ class MainContainer extends React.Component {
             parsedUserPrompts = null
             Swal.fire({
               icon: 'error',
-              title: this.props.t('prompt_not_found'),
-              text: this.props.t('prompt_not_found_text'),
+              title: this.props.t('prompt_not_found.0'),
+              text: this.props.t('prompt_not_found.1'),
               confirmButtonColor: 'blue',
               confirmButtonText: this.props.t('ok')
             }).then(() => history.pushState('', '', location.origin))
@@ -173,8 +176,8 @@ class MainContainer extends React.Component {
             parsedUserResults = null
             Swal.fire({
               icon: 'error',
-              title: this.props.t('result_not_found'),
-              text: this.props.t('result_not_found_text'),
+              title: this.props.t('result_not_found.0'),
+              text: this.props.t('result_not_found.1'),
               confirmButtonColor: 'blue',
               confirmButtonText: this.props.t('ok')
             }).then(() => history.pushState('', '', location.origin))
@@ -552,7 +555,9 @@ class MainContainer extends React.Component {
   }
 
   toggleSidebar() {
-    this.setState({ isSidebarOpened: !this.state.isSidebarOpened })
+    this.setState({ isSidebarOpened: !this.state.isSidebarOpened }, () => {
+      if (this.state.isSidebarOpened) this.sortHandler(this.state.sortBy)
+    })
   }
 
   closeSidebar() {
@@ -806,6 +811,7 @@ class MainContainer extends React.Component {
             onCancelHandler={this.onCancelHandler.bind(this)}
             toggleSidebar={this.toggleSidebar.bind(this)}
             searchHandler={this.searchHandler.bind(this)}
+            sortHandler={this.sortHandler.bind(this)}
             closeSidebar={this.closeSidebar.bind(this)}
             deleteAllPrompts={this.deleteAllPrompts.bind(this)}
             deleteSelectedPrompt={this.deleteSelectedPrompt.bind(this)}
