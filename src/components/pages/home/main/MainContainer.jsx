@@ -125,8 +125,8 @@ class MainContainer extends React.Component {
         const parsedChunkedPrompts = await JSON.parse(chunkedPrompts)
         if (parsedChunkedPrompts !== null) {
           this.setState({
-            chunkedPromptsData: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt),
-            getSortedChunkedPrompts: parsedChunkedPrompts.sort((a, b) => b.updatedAt - a.updatedAt)
+            chunkedPromptsData: parsedChunkedPrompts.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)),
+            getSortedChunkedPrompts: parsedChunkedPrompts.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
           })
         }
       } catch (error) {
@@ -345,7 +345,6 @@ class MainContainer extends React.Component {
               isGenerating: true
             })
           }
-          this.setState({ isGenerating: false }, () => this.saveUserResultData())
         } else {
           const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`, { signal: abortController.signal })
           let text = ''
@@ -362,8 +361,8 @@ class MainContainer extends React.Component {
               isGenerating: true
             })
           }
-          this.setState({ isGenerating: false }, () => this.saveUserResultData())
         }
+        this.setState({ isGenerating: false }, () => this.saveUserResultData())
       }      
     } catch (error) {
       if (error.name !== 'AbortError') {
@@ -375,7 +374,6 @@ class MainContainer extends React.Component {
           confirmButtonText: this.props.t('ok')
         })
       }
-      this.setState({ isLoading: false, isGenerating: false }, () => this.saveUserResultData())
     }
   }
 
@@ -487,14 +485,14 @@ class MainContainer extends React.Component {
           chunkedPromptsData[chunkedPromptsData.indexOf(foundChunkedPrompt)] = {
             id: foundChunkedPrompt.id,
             promptChunk: chunkedPrompt,
-            updatedAt: +new Date()
+            updatedAt: new Date().toISOString()
           }
         } else chunkedPromptsData.push({
           id: this.state.promptId,
           promptChunk: chunkedPrompt,
-          updatedAt: +new Date()
+          updatedAt: (new Date()).toISOString()
         })
-        chunkedPromptsData.sort((a, b) => b.updatedAt - a.updatedAt)
+        chunkedPromptsData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
         localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(chunkedPromptsData))
         if (this.loadAllPrompts() !== null) {
           const userPromptsData = this.loadAllPrompts().map(userPrompt => ({ ...userPrompt }))
@@ -616,6 +614,7 @@ class MainContainer extends React.Component {
             lastPrompt: '',
             promptId: 0,
             chunkedPromptsData: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId),
+            getSortedChunkedPrompts: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId),
             responseResult: ''
           }, () => {
             localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(this.state.chunkedPromptsData))
@@ -625,7 +624,8 @@ class MainContainer extends React.Component {
             })
         } else {
           this.setState({
-            chunkedPromptsData: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId)
+            chunkedPromptsData: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId),
+            getSortedChunkedPrompts: this.state.chunkedPromptsData.filter(chunkedPrompt => chunkedPrompt.id !== promptId)
           }, () => {
             localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(this.state.chunkedPromptsData))
             localStorage.setItem(this.state.USER_PROMPTS_STORAGE_KEY, JSON.stringify(userPromptsData))
