@@ -45,7 +45,6 @@ const PreviewContainer = ({ t, iframeRef, isLoading, isGenerating, responseResul
       </article>
     )
   } else if (responseResult.includes('<html')) {
-    const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200">
         <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
@@ -84,7 +83,7 @@ const PreviewContainer = ({ t, iframeRef, isLoading, isGenerating, responseResul
             }
           </div>
         </section>
-        <iframe title="Web Preview" ref={iframeRef} srcDoc={normalizedResponseResult} className="w-full grow duration-200"></iframe>
+        <iframe title="Web Preview" ref={iframeRef} className="w-full grow duration-200"></iframe>
       </article>
     )
   } else {

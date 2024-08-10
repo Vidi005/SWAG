@@ -10,6 +10,7 @@ import JsCodeContainer from "./JsCodeContainer"
 import { fileToGenerativePart, geminiAIModels, getUserPrompt, isStorageExist } from "../../../../utils/data"
 import DownloadFileModal from "../pop_up/DownloadFileModal"
 import JSZip from "jszip"
+import { createIframeWorker } from "../../../../utils/worker"
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -69,7 +70,7 @@ class MainContainer extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.responseResult !== this.state.responseResult) this.scrollToBottom()
+    if (prevState.responseResult !== this.state.responseResult) this.showHTMLIframe()
     if (prevState.currentImgFile !== this.state.currentImgFile && this.state.currentImgFile !== null) {
       this.setState({ currentImgURL: URL.createObjectURL(this.state.currentImgFile) })
     }
@@ -85,12 +86,13 @@ class MainContainer extends React.Component {
   }
 
   loadSavedGeminiModel() {
-    const geminiAIModel = localStorage.getItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY) || this.state.selectedModel.variant
-    this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
+    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+      const geminiAIModel = localStorage.getItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY) || this.state.selectedModel.variant
+      this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
+    }
   }
 
   searchHandler(event) {
-    scrollTo(0, 0)
     const searchQuery = event.target.value.toLowerCase()
     const { sortBy } = this.state
     const chunkedPromptList = this.state.chunkedPromptsData
@@ -98,13 +100,12 @@ class MainContainer extends React.Component {
     else {
       let searchData = chunkedPromptList
       if (sortBy !== this.props.t('sort_chunked_prompts.0')) {
-        searchData = chunkedPromptList.filter(chunkedPrompt => 
-          chunkedPrompt.promptChunk === sortBy
-        )
+        searchData = chunkedPromptList.filter(chunkedPrompt => chunkedPrompt.promptChunk === sortBy)
       }
       searchData = searchData.filter(chunkedPrompt => chunkedPrompt.promptChunk.toLowerCase().includes(searchQuery))
       this.setState({ getSortedChunkedPrompts: searchData })
     }
+    scrollTo(0, 0)
   }
 
   sortHandler(sortBy) {
@@ -458,9 +459,20 @@ class MainContainer extends React.Component {
     }
   }
 
-  async scrollToBottom() {
+  showHTMLIframe() {
+    const worker = createIframeWorker()
+    const normalizedResponseResult = `<!DOCTYPE html>\n<html lang="en">\n  ${this.state.responseResult.replace(/^[\s\S]*?<html[\s\S]*?>|<\/html>[\s\S]*$/gm, '').replace(/\n/gm, '\n  ').replace(/```/gm, '').trim()}\n</html>`
+    worker.postMessage({ htmlString: normalizedResponseResult })
+    worker.onmessage = workerEvent => {
+      if (this.iframeRef.current) this.iframeRef.current.srcdoc = workerEvent.data
+      this.scrollToBottom()
+      worker.terminate()
+    }
+  }
+
+  scrollToBottom() {
     if (this.state.responseResult.includes('<html')) {
-      await this.iframeRef.current.contentWindow.scrollTo(0, 999999)
+      this.iframeRef.current.contentWindow.scrollTo(0, 999999)
       const codeContent = document.querySelector('.html-code-content pre')
       if (codeContent) codeContent.scrollTop = codeContent.scrollHeight
     }
