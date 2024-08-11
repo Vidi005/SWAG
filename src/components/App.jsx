@@ -19,6 +19,7 @@ class App extends React.Component {
       USER_PROMPTS_STORAGE_KEY: 'USER_PROMPTS_STORAGE_KEY',
       USER_RESULTS_STORAGE_KEY: 'USER_RESULTS_STORAGE_KEY',
       selectedLanguage: 'en',
+      inputType: 'password',
       userName: '',
       geminiApiKey: null,
       isDarkMode: false,
@@ -139,11 +140,19 @@ class App extends React.Component {
     this.setState(prevState => ({ ...prevState, geminiApiKey: event.target.value }))
   }
 
+  changeVisibilityPassword (event) {
+    event.preventDefault()
+    if (this.state.inputType === 'password') {
+      this.setState({ inputType: 'text' })
+    } else this.setState({ inputType: 'password' })
+  }
+
   changeUserDataSetting() {
     this.setState(prevState => ({ isDataWillBeSaved: !prevState.isDataWillBeSaved }))
   }
 
-  saveUserData() {
+  saveUserData(event) {
+    event.preventDefault()
     this.setState({ isUserDataEntered: true }, () => {
       if (isStorageExist(i18n.t('browser_warning'))) {
         const userData = {
@@ -152,9 +161,7 @@ class App extends React.Component {
         }
         if (this.state.isDataWillBeSaved) {
           localStorage.setItem(this.state.USER_API_STORAGE_KEY, JSON.stringify(userData))
-        } else {
-          sessionStorage.setItem(this.state.USER_API_STORAGE_KEY, JSON.stringify(userData))
-        }
+        } else sessionStorage.setItem(this.state.USER_API_STORAGE_KEY, JSON.stringify(userData))
       }
     })
   }
@@ -209,6 +216,7 @@ class App extends React.Component {
               handleApiKeyChange={this.handleApiKeyChange.bind(this)}
               onFocusHandler={this.onFocusHandler.bind(this)}
               onBlurHandler={this.onBlurHandler.bind(this)}
+              changeVisibilityPassword={this.changeVisibilityPassword.bind(this)}
               changeUserDataSetting={this.changeUserDataSetting.bind(this)}
               saveUserData={this.saveUserData.bind(this)}
               resetUserData={this.resetUserData.bind(this)}
@@ -224,6 +232,7 @@ class App extends React.Component {
               handleApiKeyChange={this.handleApiKeyChange.bind(this)}
               onFocusHandler={this.onFocusHandler.bind(this)}
               onBlurHandler={this.onBlurHandler.bind(this)}
+              changeVisibilityPassword={this.changeVisibilityPassword.bind(this)}
               changeUserDataSetting={this.changeUserDataSetting.bind(this)}
               saveUserData={this.saveUserData.bind(this)}
               resetUserData={this.resetUserData.bind(this)}

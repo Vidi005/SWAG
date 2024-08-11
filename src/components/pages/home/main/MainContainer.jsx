@@ -903,12 +903,14 @@ class MainContainer extends React.Component {
           isUserDataEntered={this.props.state.isUserDataEntered}
           isFocused={this.props.state.isFocused}
           isDataWillBeSaved={this.props.state.isDataWillBeSaved}
+          inputType={this.props.state.inputType}
           userName={this.props.state.userName}
           geminiApiKey={this.props.state.geminiApiKey}
           handleNameChange={this.props.handleNameChange}
           handleApiKeyChange={this.props.handleApiKeyChange}
           onFocusHandler={this.props.onFocusHandler}
           onBlurHandler={this.props.onBlurHandler}
+          changeVisibilityPassword={this.props.changeVisibilityPassword}
           changeUserDataSetting={this.props.changeUserDataSetting}
           saveUserData={this.props.saveUserData}
         />

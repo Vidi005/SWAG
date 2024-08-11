@@ -4,7 +4,7 @@ import HeaderContainer from './header/HeaderContainer'
 import MainContainer from './main/MainContainer'
 import FooterContainer from './footer/FooterContainer'
 
-const HomePage = ({ t, state, changeLanguage, setDisplayMode, handleNameChange, handleApiKeyChange, onFocusHandler, onBlurHandler, changeUserDataSetting, saveUserData, resetUserData }) => (
+const HomePage = ({ t, state, changeLanguage, setDisplayMode, handleNameChange, handleApiKeyChange, onFocusHandler, onBlurHandler, changeVisibilityPassword, changeUserDataSetting, saveUserData, resetUserData }) => (
   <div className="home-page h-screen w-full flex flex-col bg-cyan-100 dark:bg-black animate__animated animate__fadeIn">
     <Helmet>
       <meta name="keywords" content="SWAG" />
@@ -25,6 +25,7 @@ const HomePage = ({ t, state, changeLanguage, setDisplayMode, handleNameChange, 
       handleApiKeyChange={handleApiKeyChange}
       onFocusHandler={onFocusHandler}
       onBlurHandler= {onBlurHandler}
+      changeVisibilityPassword={changeVisibilityPassword}
       changeUserDataSetting={changeUserDataSetting}
       saveUserData={saveUserData}
     />

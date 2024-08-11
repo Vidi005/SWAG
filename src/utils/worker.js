@@ -9,9 +9,4 @@ const createIframeWorker = () => {
   return new Worker(URL.createObjectURL(blob))
 }
 
-const createPromptAndResultWorker = () => {
-  const workerScript = `
-  `
-}
-
-export { createIframeWorker, createPromptAndResultWorker }
+export { createIframeWorker }
