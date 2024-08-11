@@ -65,6 +65,7 @@ class MainContainer extends React.Component {
       }, 10)
     })
     addEventListener('beforeunload', () => {
+      this.onUnloadPage.bind(this)
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
   }
@@ -77,12 +78,27 @@ class MainContainer extends React.Component {
     if (prevProps.t('sort_chunked_prompts.0') !== this.props.t('sort_chunked_prompts.0')) {
       this.setState({ sortBy: this.props.t('sort_chunked_prompts.0') })
     }
+    if (prevState.isLoading && !this.state.isLoading || prevState.isGenerating && !this.state.isGenerating) {
+      removeEventListener('beforeunload', () => this.onUnloadPage)
+    } else if (!prevState.isLoading && this.state.isLoading || !prevState.isGenerating && this.state.isGenerating) {
+      addEventListener('beforeunload', () => this.onUnloadPage)
+    }
   }
 
   componentWillUnmount() {
     removeEventListener('beforeunload', () => {
+      this.onUnloadPage.bind(this)
+      if (this.state.isLoading || this.state.isGenerating) {
+        if (this.state.responseResult !== '') this.saveUserResultData()
+        this.stopPrompt()
+      }
       localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
     })
+  }
+
+  onUnloadPage (event) {
+    event.preventDefault()
+    event.returnValue = this.props.t('unsaved_warning')
   }
 
   loadSavedGeminiModel() {
@@ -181,7 +197,7 @@ class MainContainer extends React.Component {
               text: this.props.t('result_not_found.1'),
               confirmButtonColor: 'blue',
               confirmButtonText: this.props.t('ok')
-            }).then(() => history.pushState('', '', location.origin))
+            }).then(() => this.setState({ responseResult: '' }))
           }
         }
       } catch (error) {
@@ -373,7 +389,9 @@ class MainContainer extends React.Component {
           text: `${error.message}`,
           confirmButtonColor: 'blue',
           confirmButtonText: this.props.t('ok')
-        })
+        }).then(() => {
+          if (this.state.responseResult !== '') this.saveUserResultData()
+        }).finally(() => this.setState({ isLoading: false, isGenerating: false }))
       }
     }
   }
@@ -419,6 +437,7 @@ class MainContainer extends React.Component {
   regeneratePrompt() {
     try {
       this.setState({
+        promptId: getUserPrompt(),
         isLoading: true,
         responseResult: '',
         isEditing: false,
@@ -575,8 +594,11 @@ class MainContainer extends React.Component {
       if (this.state.promptId !== getUserPrompt()) {
         this.removeCurrentImage()
         this.removeLastImage()
-        this.loadPromptAndResult()
-        this.setState({ isEditing: false, currentPrompt: '' })
+        if (this.state.isLoading || this.state.isGenerating) {
+          if (this.state.responseResult !== '') this.saveUserResultData()
+          this.stopPrompt()
+        }
+        this.setState({ isEditing: false, currentPrompt: '' }, () => this.loadPromptAndResult())
       }
     })
   }
