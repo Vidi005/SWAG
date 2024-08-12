@@ -38,7 +38,6 @@ class MainContainer extends React.Component {
       currentImgURL: null,
       lastImgFile: null,
       abortController: null,
-      filteredPrompt: this.props.t('filtered_prompt'),
       responseResult: '',
       areCodesCopied: false,
       areTextsWrapped: false,
@@ -335,7 +334,7 @@ class MainContainer extends React.Component {
   
   async postPrompt(model, userPrompt, inputImg) {
     try {
-      const { totalTokens } = await model.countTokens(`${userPrompt}. ${this.state.filteredPrompt}`)
+      const { totalTokens } = await model.countTokens(userPrompt)
       if (totalTokens > 10000) {
         this.setState({
           responseResult: this.props.t('prompt_token_limit'),
@@ -347,7 +346,7 @@ class MainContainer extends React.Component {
         this.setState({ abortController: abortController })
         if (inputImg) {
           const imageParts = await Promise.all([fileToGenerativePart(inputImg)])
-          const result = await model.generateContentStream([`${userPrompt}.\n${this.state.filteredPrompt}`, ...imageParts], { signal: abortController.signal })
+          const result = await model.generateContentStream([userPrompt, ...imageParts], { signal: abortController.signal })
           let text = ''
           for await (const chunk of result.stream) {
             if (abortController.signal.aborted) break
@@ -363,7 +362,7 @@ class MainContainer extends React.Component {
             })
           }
         } else {
-          const result = await model.generateContentStream(`${userPrompt}.\n${this.state.filteredPrompt}`, { signal: abortController.signal })
+          const result = await model.generateContentStream(userPrompt, { signal: abortController.signal })
           let text = ''
           for await (const chunk of result.stream) {
             if (abortController.signal.aborted) break
@@ -420,7 +419,12 @@ class MainContainer extends React.Component {
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
-      const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
+      const model = genAI.getGenerativeModel({
+        model: this.state.selectedModel?.variant,
+        systemInstruction: this.props.t('system_instructions'),
+        safetySettings,
+        generationConfig: { temperature: 1 }
+      })
       this.postPrompt(model, this.state.currentPrompt, this.state.currentImgFile)
     } catch (error) {
       Swal.fire({
@@ -457,7 +461,12 @@ class MainContainer extends React.Component {
         }
       ]
       const genAI = new GoogleGenerativeAI(this.props.state.geminiApiKey)
-      const model = genAI.getGenerativeModel({ model: this.state.selectedModel?.variant, safetySettings })
+      const model = genAI.getGenerativeModel({
+        model: this.state.selectedModel?.variant,
+        systemInstruction: this.props.t('system_instructions'),
+        safetySettings,
+        generationConfig: { temperature: 1 }
+      })
       this.postPrompt(model, this.state.lastPrompt, this.state.lastImgFile)
     } catch (error) {
       Swal.fire({
