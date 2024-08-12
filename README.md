@@ -7,9 +7,6 @@ Before using this web app, please follow the steps below.
 1. Create an account and log in at <a href="https://ai.google.dev" target="_blank" rel="noopener noreferrer">Google AI Dev Site</a>
 2. Select the free tier option
 3. Create a project using <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer">Google Cloud Studio</a>
-<p align="center">
-  <img src="https://github.com/Vidi005/SWAG/blob/main/Screenshots/Screenshot-create-account.png" width="100%">
-</p>
 4. Generate an API key within your project
 <p align="center">
   <img src="https://github.com/Vidi005/SWAG/blob/main/Screenshots/Screenshot-generate-api-key.png" width="100%">
