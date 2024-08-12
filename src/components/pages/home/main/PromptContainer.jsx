@@ -3,7 +3,7 @@ import DropZoneContainer from "./DropZoneContainer"
 import { Listbox, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
       <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
@@ -52,7 +52,7 @@ const PromptContainer = ({ t, state, fileInputRef, changeGeminiModel, handleCurr
       </Listbox>
     </section>
     <div className="prompt-container flex flex-nowrap items-stretch grow p-2">
-      {state.savedApiKey && (
+      {(state.savedApiKey || isDataWillBeSaved) && (
         <button className={"inline-flex items-center justify-center w-8 mb-auto pr-1 hover:bg-black/25 dark:hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-black/75 focus-visible:dark:ring-white/75 duration-200 rounded-md animate__animated animate__fadeInLeft"} title="Sidebar" onClick={toggleSidebar}>
           <img className="object-contain w-full invert dark:invert-0 duration-200" src={state.isSidebarOpened ? `${import.meta.env.BASE_URL}images/close-sidebar-icon.svg` : `${import.meta.env.BASE_URL}images/view-sidebar-icon.svg`} alt={state.isSidebarOpened ? "Close Sidebar" : "View Sidebar"} />
         </button>

@@ -20,6 +20,7 @@
     "learn_more": "Pelajari Lebih Lanjut",
     "invalid_file": ["Tipe File Tidak Didukung!", "Silakan pilih file gambar."],
     "system_instructions": "Anda adalah seorang ahli pengembang web front-end yang hanya dapat membuat satu file HTML tanpa kode back-end. Jika menggunakan pustaka web front-end, impor hanya dari CDN atau sejenisnya dan tulis kodenya di dalam tag <script>. Jika menggunakan CSS asli, sertakan sebagai CSS inline di dalam kode HTML. Jika menggunakan JavaScript, tulis sebagai JavaScript inline di dalam kode HTML. Berikan hanya kode HTML lengkap tanpa penjelasan atau deskripsi tambahan.",
+    "create_new_prompt": "Buat perintah baru di sini...",
     "regenerate": "Kirim ulang",
     "prompt_history": "Riwayat Perintah",
     "clear_all_histories": ["Hapus Semua Riwayat", "Apakah Anda yakin ingin menghapus semua riwayat perintah dari peramban ini?\nTindakan ini tidak dapat dipulihkan."],

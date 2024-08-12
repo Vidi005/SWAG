@@ -101,7 +101,7 @@ class MainContainer extends React.Component {
   }
 
   loadSavedGeminiModel() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       const geminiAIModel = localStorage.getItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY) || this.state.selectedModel.variant
       this.setState({ selectedModel: geminiAIModels.find(model => model.variant === geminiAIModel) })
     }
@@ -135,7 +135,7 @@ class MainContainer extends React.Component {
   }
 
   async loadChunkedPrompts() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       const chunkedPrompts = localStorage.getItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
       try {
         const parsedChunkedPrompts = await JSON.parse(chunkedPrompts)
@@ -155,7 +155,7 @@ class MainContainer extends React.Component {
   }
 
   loadPromptAndResult() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey && location.toString().includes('?id=')) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved) && location.toString().includes('?id=')) {
       let userPrompts = localStorage.getItem(this.state.USER_PROMPTS_STORAGE_KEY)
       let userResults = localStorage.getItem(this.state.USER_RESULTS_STORAGE_KEY)
       try {
@@ -212,7 +212,7 @@ class MainContainer extends React.Component {
   }
 
   loadAllPrompts() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       let userPrompts = localStorage.getItem(this.state.USER_PROMPTS_STORAGE_KEY)
       try {
         const parsedUserPrompts = JSON.parse(userPrompts)
@@ -233,7 +233,7 @@ class MainContainer extends React.Component {
   }
 
   loadAllResults() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       let userResults = localStorage.getItem(this.state.USER_RESULTS_STORAGE_KEY)
       try {
         const parsedUserResults = JSON.parse(userResults)
@@ -515,7 +515,7 @@ class MainContainer extends React.Component {
   }
 
   saveUserPromptData() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       this.setState({ promptId: +new Date() }, () => {
         const chunkedPromptsData = this.state.chunkedPromptsData.map(chunkedPrompt => ({ ...chunkedPrompt }))
         let chunkedPrompt = this.state.lastPrompt
@@ -558,7 +558,7 @@ class MainContainer extends React.Component {
   }
 
   saveUserResultData() {
-    if (isStorageExist(this.props.t('browser_warning')) && this.state.savedApiKey) {
+    if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
       if (this.loadAllResults() !== null) {
         const userResultsData = this.loadAllResults().map(userResult => ({ ...userResult }))
         const foundUserResult = userResultsData.find(userResult => userResult.id === getUserPrompt())
@@ -838,6 +838,7 @@ class MainContainer extends React.Component {
         <section className="grid grid-flow-row w-full lg:grid-cols-2 lg:h-3/5">
           <PromptContainer
             t={this.props.t}
+            isDataWillBeSaved={this.props.state.isDataWillBeSaved}
             state={this.state}
             fileInputRef={this.fileInputRef}
             changeGeminiModel={this.changeGeminiModel.bind(this)}
