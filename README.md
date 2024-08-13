@@ -62,3 +62,7 @@ Before using this web app, please follow the steps below.
 - React Router
 - SweetAlert2
 - Vite Plugin PWA
+
+### Known Issues
+- Candidate was blocked due to RECITATION error results may occur randomly.
+<br/>Source: <a href="https://github.com/google-gemini/generative-ai-js/issues/138">Candidate was blocked due to RECITATION bug</a>
