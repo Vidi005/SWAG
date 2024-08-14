@@ -335,7 +335,7 @@ class MainContainer extends React.Component {
   async postPrompt(model, userPrompt, inputImg) {
     try {
       const { totalTokens } = await model.countTokens(userPrompt)
-      if (totalTokens > 10000) {
+      if (totalTokens > 8192) {
         this.setState({
           responseResult: this.props.t('prompt_token_limit'),
           isLoading: false
@@ -389,7 +389,7 @@ class MainContainer extends React.Component {
           confirmButtonColor: 'blue',
           confirmButtonText: this.props.t('ok')
         }).then(() => {
-          if (this.state.responseResult !== '') this.saveUserResultData()
+          if (this.state.responseResult !== '' || !this.state.responseResult.includes('<html')) this.saveUserResultData()
         }).finally(() => this.setState({ isLoading: false, isGenerating: false }))
       }
     }
