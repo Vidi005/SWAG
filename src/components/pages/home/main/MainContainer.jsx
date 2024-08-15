@@ -389,7 +389,7 @@ class MainContainer extends React.Component {
           confirmButtonColor: 'blue',
           confirmButtonText: this.props.t('ok')
         }).then(() => {
-          if (this.state.responseResult !== '' || this.state.responseResult.includes('<html')) this.saveUserResultData()
+          if (this.state.responseResult !== '') this.saveUserResultData()
         }).finally(() => this.setState({ isLoading: false, isGenerating: false }))
       }
     }

@@ -83,7 +83,7 @@ const PreviewContainer = ({ t, iframeRef, isLoading, isGenerating, responseResul
             }
           </div>
         </section>
-        <iframe title="Web Preview" ref={iframeRef} className="w-full grow duration-200"></iframe>
+        <iframe title="Web Preview" ref={iframeRef} className="w-full grow"></iframe>
       </article>
     )
   } else {
