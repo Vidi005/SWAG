@@ -3,7 +3,7 @@ import DropZoneContainer from "./DropZoneContainer"
 import { Listbox, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImage, pickLastImage, removeCurrentImage, removeLastImage, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImages, pickLastImages, removeCurrentImage, removeLastImages, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
       <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
@@ -68,9 +68,9 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGemi
                         <div className="flex flex-col flex-auto h-0 items-end justify-end w-full px-12 py-2 duration-200 overflow-y-auto">
                           <textarea onChange={handleLastPromptChange} value={state.lastPrompt} className="grow w-full border border-cyan-900 dark:border-none bg-cyan-100 dark:bg-gray-700 p-2 text-justify text-cyan-900 dark:text-gray-100 duration-200 overflow-x-hidden overflow-y-auto rounded-md" required></textarea>
                           <span className="flex pt-1 items-center text-cyan-900 dark:text-white">
-                            <input ref={fileInputRef} className="max-w-max text-cyan-700 dark:text-gray-200 truncate duration-200" id="last-image-picker" type="file" accept="image/*" onChange={(e) => pickLastImage(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
-                            {state.lastImgFile && (
-                              <div title="Remove Image" htmlFor="last-image-picker" className="btn-remove grid items-center justify-center text-center font-mono bg-gray-500/75 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs text-white aspect-square mr-3 px-1.5 cursor-pointer rounded-full duration-200" onClick={removeLastImage}>X</div>
+                            <input ref={fileInputRef} className="max-w-max text-cyan-700 dark:text-gray-200 truncate duration-200" id="last-image-picker" type="file" accept="image/*" multiple max={10} onChange={(e) => pickLastImages(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
+                            {state.lastImgFiles.length > 0 && (
+                              <div title="Remove Image" htmlFor="last-image-picker" className="btn-remove grid items-center justify-center text-center font-mono bg-gray-500/75 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs text-white aspect-square mr-3 px-1.5 cursor-pointer rounded-full duration-200" onClick={removeLastImages}>X</div>
                             )}
                             <button className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 active:bg-gray-500 dark:hover:bg-gray-900 dark:active:bg-gray-500 mr-3 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={onCancelHandler}>{t('cancel')}</button>
                             <button className="bg-cyan-300 dark:bg-cyan-700 hover:bg-cyan-500 active:bg-cyan-700 dark:hover:bg-cyan-900 dark:active:bg-cyan-500 px-2 py-1.5 text-xs rounded-md shadow-md dark:shadow-white/50 duration-200" onClick={regeneratePrompt} disabled={state.isLoading || state.lastPrompt.length < 1}>{t('regenerate')}</button>
@@ -95,13 +95,13 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGemi
             isLoading={state.isLoading}
             isGenerating={state.isGenerating}
             genAIInput={state.selectedModel?.input}
-            pickCurrentImage={pickCurrentImage}
-            currentImgURL={state.currentImgURL}
+            pickCurrentImages={pickCurrentImages}
+            currentImgURLs={state.currentImgURLs}
             removeCurrentImage={removeCurrentImage}
           />
           <div className="flex items-center justify-between w-full pt-1">
-            <label title="Upload Image" htmlFor="image-picker" className="btn-import hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 cursor-pointer p-2 duration-200 rounded-full">
-              <input className="hidden" type="file" id="image-picker" accept="image/*" onChange={(e) => pickCurrentImage(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
+            <label title="Upload Images" htmlFor="image-picker" className="btn-import hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 cursor-pointer p-2 duration-200 rounded-full">
+              <input className="hidden" type="file" id="image-picker" accept="image/*" multiple max={10} onChange={(e) => pickCurrentImages(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
               <img className="dark:hidden object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon.svg`} alt="Import Image" />
               <img className="hidden dark:block object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon-dark.svg`} alt="Import Image" />
             </label>

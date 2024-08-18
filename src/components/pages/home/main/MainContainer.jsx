@@ -34,9 +34,9 @@ class MainContainer extends React.Component {
       chunkedPromptsData: [],
       getSortedChunkedPrompts: [],
       sortBy: this.props.t('sort_chunked_prompts.0'),
-      currentImgFile: null,
-      currentImgURL: null,
-      lastImgFile: null,
+      currentImgFiles: [],
+      currentImgURLs: [],
+      lastImgFiles: [],
       abortController: null,
       responseResult: '',
       areCodesCopied: false,
@@ -71,8 +71,9 @@ class MainContainer extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.responseResult !== this.state.responseResult) this.showHTMLIframe()
-    if (prevState.currentImgFile !== this.state.currentImgFile && this.state.currentImgFile !== null) {
-      this.setState({ currentImgURL: URL.createObjectURL(this.state.currentImgFile) })
+    if (prevState.currentImgFiles.length !== this.state.currentImgFiles.length && this.state.currentImgFiles.length > 0) {
+      this.setState(({ currentImgURLs: [...this.state.currentImgFiles.map(file => URL.createObjectURL(file))]
+      }))
     }
     if (prevProps.t('sort_chunked_prompts.0') !== this.props.t('sort_chunked_prompts.0')) {
       this.setState({ sortBy: this.props.t('sort_chunked_prompts.0') })
@@ -259,7 +260,7 @@ class MainContainer extends React.Component {
         if (isStorageExist(this.props.t('browser_warning'))) {
           localStorage.setItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY, this.state.selectedModel.variant)
         }
-        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFile: null, currentImgURL: null, lastImgFile: null })
+        if (this.state.selectedModel.variant !== 'multimodal') this.setState({ currentImgFiles: [], currentImgURLs: [], lastImgFiles: [] })
       })
     }
   }
@@ -276,13 +277,12 @@ class MainContainer extends React.Component {
     }
   }
 
-  pickCurrentImage(imgFiles) {
+  pickCurrentImages(imgFiles) {
     if (imgFiles.length === 0) return
-    const file = imgFiles[0]
-    const validImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'raw']
-    const fileExtension = file.name.split('.').pop().toLowerCase()
-    if (file) {
-      const maxFileSize = 10 * 1024 * 1024
+    const validImageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']
+    const maxFileSize = 10 * 1024 * 1024
+    const validFiles = Array.from(imgFiles).filter(file => {
+      const fileExtension = file.name.split('.').pop().toLowerCase()
       if (file.size > maxFileSize) {
         Swal.fire({
           icon: 'error',
@@ -293,19 +293,42 @@ class MainContainer extends React.Component {
         })
         return
       }
-      if (validImageExtensions.includes(fileExtension)) {
-        this.setState({ currentImgFile: file })
+      if (!validImageExtensions.includes(fileExtension)) {
+        Swal.fire({
+          icon: 'error',
+          title: this.props.t('invalid_file.0'),
+          text: this.props.t('invalid_file.1'),
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
+        })
+        return
       }
+      return true
+    })
+    if (validFiles.length > 0) {
+      this.setState(prevState => {
+        const currentImgFiles = [...prevState.currentImgFiles, ...validFiles]
+        if (currentImgFiles.length > 10) {
+          Swal.fire({
+            icon: 'error',
+            title: this.props.t('max_files_exceeded.0'),
+            text: this.props.t('max_files_exceeded.1'),
+            confirmButtonColor: 'blue',
+            confirmButtonText: this.props.t('ok')
+          })
+          return
+        }
+        else return ({ currentImgFiles: currentImgFiles })
+      })
     }
   }
 
-  pickLastImage(imgFiles) {
+  pickLastImages(imgFiles) {
     if (imgFiles.length === 0) return
-    const file = imgFiles[0]
-    const validImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'raw']
-    const fileExtension = file.name.split('.').pop().toLowerCase()
-    if (file) {
-      const maxFileSize = 10 * 1024 * 1024
+    const validImageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']
+    const maxFileSize = 10 * 1024 * 1024
+    const validFiles = Array.from(imgFiles).filter(file => {
+      const fileExtension = file.name.split('.').pop().toLowerCase()
       if (file.size > maxFileSize) {
         Swal.fire({
           icon: 'error',
@@ -316,23 +339,51 @@ class MainContainer extends React.Component {
         })
         return
       }
-      if (validImageExtensions.includes(fileExtension)) {
-        this.setState({ lastImgFile: file })
+      if (!validImageExtensions.includes(fileExtension)) {
+        Swal.fire({
+          icon: 'error',
+          title: this.props.t('invalid_file.0'),
+          text: this.props.t('invalid_file.1'),
+          confirmButtonColor: 'blue',
+          confirmButtonText: this.props.t('ok')
+        })
+        return
       }
+      return true
+    })
+    if (validFiles.length > 0) {
+      this.setState(prevState => {
+        const lastImgFiles = [...prevState.lastImgFiles, ...validFiles]
+        if (lastImgFiles.length > 10) {
+          Swal.fire({
+            icon: 'error',
+            title: this.props.t('max_files_exceeded.0'),
+            text: this.props.t('max_files_exceeded.1'),
+            confirmButtonColor: 'blue',
+            confirmButtonText: this.props.t('ok')
+          })
+          return
+        }
+        else return ({ lastImgFiles: lastImgFiles })
+      })
     }
   }
 
-  removeCurrentImage() {
-    this.setState({ currentImgFile: null, currentImgURL: null })
+  removeCurrentImage(index) {
+    this.setState(prevState => {
+      const currentImgFiles = prevState.currentImgFiles.filter((_, i) => i !== index)
+      const currentImgURLs = prevState.currentImgURLs.filter((_, i) => i !== index)
+      return { currentImgFiles: currentImgFiles, currentImgURLs: currentImgURLs }
+    })
   }
   
-  removeLastImage() {
-    this.setState({ lastImgFile: null }, () => {
+  removeLastImages() {
+    this.setState({ lastImgFiles: [] }, () => {
       if (this.fileInputRef.current) this.fileInputRef.current.value = ''
     })
   }
   
-  async postPrompt(model, userPrompt, inputImg) {
+  async postPrompt(model, userPrompt, inputImages) {
     try {
       const { totalTokens } = await model.countTokens(userPrompt)
       if (totalTokens > 8192) {
@@ -341,11 +392,11 @@ class MainContainer extends React.Component {
           isLoading: false
         })
       } else {
-        this.setState({ lastPrompt: userPrompt, lastImgFile: inputImg }, () => this.saveUserPromptData())
+        this.setState({ lastPrompt: userPrompt, lastImgFiles: inputImages }, () => this.saveUserPromptData())
         const abortController = new AbortController()
         this.setState({ abortController: abortController })
-        if (inputImg) {
-          const imageParts = await Promise.all([fileToGenerativePart(inputImg)])
+        if (inputImages?.length > 0) {
+          const imageParts = await Promise.all([...inputImages?.map(inputImg => fileToGenerativePart(inputImg))])
           const result = await model.generateContentStream([userPrompt, ...imageParts], { signal: abortController.signal })
           let text = ''
           for await (const chunk of result.stream) {
@@ -354,8 +405,8 @@ class MainContainer extends React.Component {
             text += chunkText
             this.setState({
               currentPrompt: '',
-              currentImgFile: null,
-              currentImgURL: null,
+              currentImgFiles: [],
+              currentImgURLs: [],
               responseResult: text,
               isLoading: false,
               isGenerating: true
@@ -370,8 +421,8 @@ class MainContainer extends React.Component {
             text += chunkText
             this.setState({
               currentPrompt: '',
-              currentImgFile: null,
-              currentImgURL: null,
+              currentImgFiles: [],
+              currentImgURLs: [],
               responseResult: text,
               isLoading: false,
               isGenerating: true
@@ -425,7 +476,7 @@ class MainContainer extends React.Component {
         safetySettings,
         generationConfig: { temperature: 1 }
       })
-      this.postPrompt(model, this.state.currentPrompt, this.state.currentImgFile)
+      this.postPrompt(model, this.state.currentPrompt, this.state.currentImgFiles)
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -467,7 +518,7 @@ class MainContainer extends React.Component {
         safetySettings,
         generationConfig: { temperature: 1 }
       })
-      this.postPrompt(model, this.state.lastPrompt, this.state.lastImgFile)
+      this.postPrompt(model, this.state.lastPrompt, this.state.lastImgFiles)
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -601,13 +652,17 @@ class MainContainer extends React.Component {
   closeSidebar() {
     this.setState({ isSidebarOpened: false, getSortedChunkedPrompts: this.state.chunkedPromptsData }, () => {
       if (this.state.promptId !== getUserPrompt()) {
-        this.removeCurrentImage()
-        this.removeLastImage()
+        this.removeLastImages()
         if (this.state.isLoading || this.state.isGenerating) {
           if (this.state.responseResult !== '') this.saveUserResultData()
           this.stopPrompt()
         }
-        this.setState({ isEditing: false, currentPrompt: '' }, () => this.loadPromptAndResult())
+        this.setState({
+          isEditing: false,
+          currentPrompt: '',
+          currentImgFiles: [],
+          currentImgURLs: []
+        }, () => this.loadPromptAndResult())
       }
     })
   }
@@ -844,10 +899,10 @@ class MainContainer extends React.Component {
             changeGeminiModel={this.changeGeminiModel.bind(this)}
             handleCurrentPromptChange={this.handleCurrentPromptChange.bind(this)}
             handleLastPromptChange={this.handleLastPromptChange.bind(this)}
-            pickCurrentImage={this.pickCurrentImage.bind(this)}
-            pickLastImage={this.pickLastImage.bind(this)}
+            pickCurrentImages={this.pickCurrentImages.bind(this)}
+            pickLastImages={this.pickLastImages.bind(this)}
             removeCurrentImage={this.removeCurrentImage.bind(this)}
-            removeLastImage={this.removeLastImage.bind(this)}
+            removeLastImages={this.removeLastImages.bind(this)}
             generatePrompt={this.generatePrompt.bind(this)}
             regeneratePrompt={this.regeneratePrompt.bind(this)}
             stopPrompt={this.stopPrompt.bind(this)}

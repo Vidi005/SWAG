@@ -2,14 +2,16 @@ import React from "react"
 import Dropzone from "react-dropzone"
 import Swal from "sweetalert2"
 
-const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrentImage, currentImgURL, removeCurrentImage }) => {
+const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrentImages, currentImgURLs, removeCurrentImage }) => {
   if (genAIInput === 'multimodal') {
     return (
       <Dropzone
         accept={{ 'image/*': [] }}
+        maxFiles={10}
+        multiple
         onDrop={acceptedFiles => {
           const imageFiles = acceptedFiles.filter(file => file.type.startsWith('image/'))
-          if (imageFiles.length > 0) pickCurrentImage(imageFiles)
+          if (imageFiles.length > 0) pickCurrentImages(imageFiles)
           else {
             Swal.fire({
               icon: 'error',
@@ -20,22 +22,39 @@ const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrent
             })
           }
         }}
+        onDropRejected={() => {
+          Swal.fire({
+            icon: 'error',
+            title: t('max_files_exceeded.0'),
+            text: t('max_files_exceeded.1'),
+            confirmButtonColor: 'blue',
+            confirmButtonText: t('ok')
+          })
+        }}
         disabled={isLoading || isGenerating}
       >
         {({ getRootProps }) => (
           <React.Fragment>
-            {currentImgURL === null
+            {currentImgURLs.length === 0
               ? (
                 <div className="dropzone grow w-full border-2 border-dashed border-cyan-700 dark:border-gray-300 grid items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
                   <h3 className="font-normal text-lg text-center text-cyan-900 dark:text-gray-100">{t('drop_image')}</h3>
                 </div>
               )
-              : (
-                <div className="image-preview relative flex-auto h-0 w-fit max-w-full p-1 duration-200">
-                  <img src={currentImgURL} alt="Image Preview" className="h-full max-w-full object-contain rounded-md shadow-md dark:shadow-white/50 overflow-hidden" />
-                  <span className="absolute grid items-center justify-center text-center font-mono bg-gray-500/75 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs text-white top-0 right-0 aspect-square px-1.5 cursor-pointer rounded-full" onClick={removeCurrentImage}>X</span>
+            : (
+                <div className="image-preview-container flex-auto h-0 max-w-full flex flex-nowrap items-center gap-2 overflow-x-auto">
+                  {currentImgURLs.map((currentImgURL, index) => (
+                    <div key={index} className="image-preview-item relative h-full p-1 duration-200">
+                      <img src={currentImgURL} alt="Image Preview" className="h-full object-contain rounded-md shadow-md dark:shadow-white/50 overflow-hidden" />
+                      <span className="absolute grid items-center justify-center text-center font-mono bg-gray-500/75 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs text-white top-0 right-0 aspect-square px-1.5 cursor-pointer rounded-full" onClick={() => removeCurrentImage(index)}>X</span>
+                    </div>
+                  ))}
+                  <div className="dropzone grow h-full min-w-max border-2 border-dashed border-cyan-700 dark:border-gray-300 grid items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
+                    <h3 className="font-normal text-lg text-center text-cyan-900 dark:text-gray-100">{t('drop_image')}</h3>
+                  </div>
                 </div>
-              )}
+              )
+            }
           </React.Fragment>
         )}
       </Dropzone>

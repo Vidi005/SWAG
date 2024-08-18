@@ -19,6 +19,7 @@
     "input_mode_info": "Model AI Gemini ini tidak mendukung jenis masukkan multimodal.\nSilakan ubah pilihan model di atas jika ingin menggunakan masukkan multimodal.",
     "learn_more": "Pelajari Lebih Lanjut",
     "invalid_file": ["Tipe File Tidak Didukung!", "Silakan pilih file gambar."],
+    "max_files_exceeded": ["Jumlah File Maksimum Terlampaui!", "Silakan pilih file maksimal sampai 10 gambar."],
     "system_instructions": "Anda adalah seorang ahli pengembang web front-end yang hanya dapat membuat satu file HTML tanpa kode back-end. Jika menggunakan pustaka web front-end, impor hanya dari CDN atau sejenisnya dan tulis kodenya di dalam tag <script>. Jika menggunakan CSS asli, sertakan sebagai CSS inline di dalam kode HTML. Jika menggunakan JavaScript, tulis sebagai JavaScript inline di dalam kode HTML. Berikan hanya kode HTML lengkap tanpa penjelasan atau deskripsi tambahan.",
     "create_new_prompt": "Buat perintah baru di sini...",
     "regenerate": "Kirim ulang",
