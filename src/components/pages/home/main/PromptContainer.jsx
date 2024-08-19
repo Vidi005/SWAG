@@ -22,11 +22,11 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, tempSettin
         >{t("temp_setting_info")}</p>
         <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
         <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-1/3 mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
-        <span className="mr-1 px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
+        <span className="mr-1 px-0.5 text-xs md:text-sm text-cyan-900 dark:text-white"><strong>{(state.temperature * 0.1).toFixed(1)}</strong></span>
       </div>
       <Popover className={"inline-block sm:hidden ml-auto px-0.5 duration-200"}>
         <Popover.Button className={"flex items-center justify-center pl-1 py-1 bg-cyan-200 dark:bg-gray-500 hover:bg-cyan-900/25 active:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 focus-visible:ring focus-visible:ring-cyan-500/50 focus-visible:ring-offset-1 rounded-md duration-200"}>
-          <span className="px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
+          <span className="px-0.5 text-xs text-cyan-900 dark:text-white"><b>{(state.temperature * 0.1).toFixed(1)}</b></span>
           <img className="h-5 object-contain invert dark:invert-0 duration-200" src={`${import.meta.env.BASE_URL}images/expand-icon.svg`} alt="Expand" />
         </Popover.Button>
         <Transition
