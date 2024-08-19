@@ -51,6 +51,8 @@ class MainContainer extends React.Component {
     }
     this.inputRef = React.createRef()
     this.fileInputRef = React.createRef()
+    this.tempSettingInfoRef = React.createRef()
+    this.tempSettingContentInfoRef = React.createRef()
     this.iframeRef = React.createRef()
   }
 
@@ -270,6 +272,30 @@ class MainContainer extends React.Component {
         if (isStorageExist(this.props.t('browser_warning'))) localStorage.setItem(this.state.GEMINI_AI_TEMPERATURE_STORAGE_KEY, event.target.value)
       })
     }
+  }
+
+  showTempSettingInfo (event, isHovered) {
+    setTimeout(() => {
+      const tempSettingInfo = this.tempSettingInfoRef.current.getBoundingClientRect()
+      const tempSettingContentInfo = this.tempSettingContentInfoRef.current
+      const tooltipWidth = tempSettingContentInfo?.offsetWidth
+      const tooltipHeight = tempSettingContentInfo?.offsetHeight
+      const leftPosition = event.clientX
+      const containerHalfWidth = document.documentElement.clientWidth / 2
+      if (tempSettingContentInfo) {
+        if (isHovered) {
+          tempSettingContentInfo.style.display = 'block'
+          tempSettingContentInfo.style.right = 'auto'
+          if (leftPosition < containerHalfWidth) {
+            tempSettingContentInfo.style.left = `${tempSettingInfo.right + 4}px`
+            tempSettingContentInfo.style.top = `${tempSettingInfo.top - tooltipHeight}px`
+          } else {
+            tempSettingContentInfo.style.left = `${tooltipWidth + 8}px`
+            tempSettingContentInfo.style.top = `${tempSettingInfo.top - 16}px`
+          }
+        } else tempSettingContentInfo.style.display = 'none'
+      }
+    }, 1)
   }
 
   changeGeminiModel(selectedVariant) {
@@ -965,6 +991,9 @@ class MainContainer extends React.Component {
             isDataWillBeSaved={this.props.state.isDataWillBeSaved}
             state={this.state}
             fileInputRef={this.fileInputRef}
+            tempSettingInfoRef={this.tempSettingInfoRef}
+            tempSettingContentInfoRef={this.tempSettingContentInfoRef}
+            showTempSettingInfo={this.showTempSettingInfo.bind(this)}
             handleTempChange={this.handleTempChange.bind(this)}
             changeGeminiModel={this.changeGeminiModel.bind(this)}
             handleCurrentPromptChange={this.handleCurrentPromptChange.bind(this)}
@@ -998,7 +1027,7 @@ class MainContainer extends React.Component {
             saveTempWebPreview={this.saveTempWebPreview.bind(this)}
           />
         </section>
-        <section className="grid grid-flow-row items-stretch w-full lg:grid-cols-3 lg:grow">
+        <section className="grid grid-flow-row items-stretch w-screen md:w-full lg:grid-cols-3 lg:grow">
           <HtmlCodeContainer
             t={this.props.t}
             isDarkMode={this.props.state.isDarkMode}

@@ -3,17 +3,29 @@ import DropZoneContainer from "./DropZoneContainer"
 import { Listbox, Popover, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, handleTempChange, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImages, takeScreenshot, pickLastImages, removeCurrentImage, removeLastImages, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, tempSettingInfoRef, tempSettingContentInfoRef, showTempSettingInfo, handleTempChange, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImages, takeScreenshot, pickLastImages, removeCurrentImage, removeLastImages, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
-      <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
+      <h5 className="whitespace-nowrap px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
       <div className="grow hidden sm:inline-flex flex-nowrap items-center">
-        <label className="grow align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
+        <img
+          ref={tempSettingInfoRef}
+          className="dark:invert max-h-5 ml-auto p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
+          src="images/info-icon.svg"
+          alt="Info"
+          onMouseEnter={event => showTempSettingInfo(event, true)}
+          onMouseLeave={event => showTempSettingInfo(event, false)}
+        />
+        <p
+          ref={tempSettingContentInfoRef}
+          className="hidden absolute border-2 border-cyan-900 dark:border-white w-1/5 p-1.5 text-sm text-white dark:shadow-white/50 backdrop-blur-sm bg-cyan-700/50 dark:bg-gray-500/50 rounded-md shadow z-10 animate__animated animate__fadeIn animate__faster"
+        >{t("temp_setting_info")}</p>
+        <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
         <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-1/3 mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
         <span className="mr-1 px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
       </div>
       <Popover className={"inline-block sm:hidden ml-auto px-0.5 duration-200"}>
-        <Popover.Button className={"flex items-center justify-center pl-1 py-1 bg-cyan-200 dark:bg-gray-500 hover:bg-cyan-900/25 active:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 focus-visible:ring focus-visible:ring-cyan-500/50 focus-visible:ring-offset-1 rounded-md shadow-md dark:shadow-white/50 duration-200"}>
+        <Popover.Button className={"flex items-center justify-center pl-1 py-1 bg-cyan-200 dark:bg-gray-500 hover:bg-cyan-900/25 active:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 focus-visible:ring focus-visible:ring-cyan-500/50 focus-visible:ring-offset-1 rounded-md duration-200"}>
           <span className="px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
           <img className="h-5 object-contain invert dark:invert-0 duration-200" src={`${import.meta.env.BASE_URL}images/expand-icon.svg`} alt="Expand" />
         </Popover.Button>
@@ -29,10 +41,22 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, handleTemp
           <Popover.Panel className={"absolute flex flex-nowrap items-center z-10 mt-1 p-2 w-fit right-1/3 origin-top-right rounded-md bg-cyan-200/50 dark:bg-gray-500/50 shadow-md dark:shadow-white/50 backdrop-blur-sm duration-200"}>
             <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
             <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-fit mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
+            <img
+              ref={tempSettingInfoRef}
+              className="dark:invert max-h-5 ml-auto p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
+              src="images/info-icon.svg"
+              alt="Info"
+              onMouseEnter={event => showTempSettingInfo(event, true)}
+              onMouseLeave={event => showTempSettingInfo(event, false)}
+            />
+            <p
+              ref={tempSettingContentInfoRef}
+              className="hidden absolute border-2 border-cyan-900 dark:border-white -mt-8 w-full p-1 text-xs sm:text-sm text-white dark:shadow-white/50 backdrop-blur-sm bg-cyan-700/50 dark:bg-gray-500/50 rounded-md shadow z-10 animate__animated animate__fadeIn animate__faster"
+            >{t("temp_setting_info")}</p>
           </Popover.Panel>
         </Transition>
       </Popover>
-      <span className="hidden sm:inline-block align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5">{t('select_model')} </span>
+      <span className="hidden sm:inline-block align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right whitespace-nowrap px-0.5">{t('select_model')} </span>
       <Listbox value={state.selectedModel?.variant} onChange={changeGeminiModel} className="w-max px-0.5 text-cyan-900 dark:text-white overflow-x-hidden duration-200">
         <div className="max-w-full overflow-x-hidden">
           <div className="btn-container flex flex-nowrap items-center px-1">

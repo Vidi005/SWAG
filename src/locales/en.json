@@ -14,6 +14,7 @@
     "prompt_not_found": ["Prompt Not Found!", "Please select a saved prompt from history list."],
     "result_not_found": ["Result Not Found!", "The result of this prompt could not be found. It might have been removed or it might not be saved correctly."],
     "unsaved_warning": "Current prompt is still running. Are you sure you want to leave?",
+    "temp_setting_info": "Use randomness higher values for more creative responses, and lower values for more precise responses.",
     "randomness": "Randomness:",
     "select_model": "Select Model:",
     "drop_image": "Drop images here",

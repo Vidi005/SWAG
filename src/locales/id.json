@@ -14,6 +14,7 @@
     "prompt_not_found": ["Perintah Tidak Ditemukan!", "Silakan pilih perintah yang tersimpan dari daftar riwayat perintah."],
     "result_not_found": ["Hasil Tidak Ditemukan!", "Hasil dari perintah ini tidak ditemukan. Mungkin perintah ini telah dihapus atau perintah ini tidak tersimpan dengan benar."],
     "unsaved_warning": "Perintah sedang berjalan. Apakah Anda yakin ingin keluar?",
+    "temp_setting_info": "Gunakan tingkat acak yang lebih tinggi untuk respons yang lebih kreatif, dan tingkat yang lebih rendah untuk respons yang lebih presisi.",
     "randomness": "Tingkat acak:",
     "select_model": "Pilih Model:",
     "drop_image": "Tarik gambar ke sini",
