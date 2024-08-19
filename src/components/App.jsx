@@ -15,6 +15,8 @@ class App extends React.Component {
       LANGUAGE_STORAGE_KEY: 'SWAG_LANG_STORAGE_KEY',
       DARK_MODE_STORAGE_KEY: 'SWAG_DARK_MODE_STORAGE_KEY',
       USER_API_STORAGE_KEY: 'USER_API_STORAGE_KEY',
+      GEMINI_AI_TEMPERATURE_STORAGE_KEY: 'GEMINI_AI_TEMPERATURE_STORAGE_KEY',
+      GEMINI_AI_MODEL_STORAGE_KEY: 'GEMINI_AI_MODEL_STORAGE_KEY',
       CHUNKED_PROMPTS_STORAGE_KEY: 'CHUNKED_PROMPTS_STORAGE_KEY',
       USER_PROMPTS_STORAGE_KEY: 'USER_PROMPTS_STORAGE_KEY',
       USER_RESULTS_STORAGE_KEY: 'USER_RESULTS_STORAGE_KEY',
@@ -181,6 +183,8 @@ class App extends React.Component {
         sessionStorage.removeItem(this.state.USER_API_STORAGE_KEY)
         sessionStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_API_STORAGE_KEY)
+        localStorage.removeItem(this.state.GEMINI_AI_TEMPERATURE_STORAGE_KEY)
+        localStorage.removeItem(this.state.GEMINI_AI_MODEL_STORAGE_KEY)
         localStorage.removeItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_PROMPTS_STORAGE_KEY)
         localStorage.removeItem(this.state.USER_RESULTS_STORAGE_KEY)

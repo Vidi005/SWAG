@@ -24,7 +24,7 @@ const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrent
         }}
         onDropRejected={() => {
           Swal.fire({
-            icon: 'error',
+            icon: 'info',
             title: t('max_files_exceeded.0'),
             text: t('max_files_exceeded.1'),
             confirmButtonColor: 'blue',
@@ -49,9 +49,11 @@ const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrent
                       <span className="absolute grid items-center justify-center text-center font-mono bg-gray-500/75 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs text-white top-0 right-0 aspect-square px-1.5 cursor-pointer rounded-full" onClick={() => removeCurrentImage(index)}>X</span>
                     </div>
                   ))}
-                  <div className="dropzone grow h-full min-w-max border-2 border-dashed border-cyan-700 dark:border-gray-300 grid items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
-                    <h3 className="font-normal text-lg text-center text-cyan-900 dark:text-gray-100">{t('drop_image')}</h3>
-                  </div>
+                  {currentImgURLs.length < 10 && (
+                    <div className="dropzone grow h-full min-w-max border-2 border-dashed border-cyan-700 dark:border-gray-300 grid items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
+                      <h3 className="font-normal text-lg text-center text-cyan-900 dark:text-gray-100">{t('drop_image')}</h3>
+                    </div>
+                  )}
                 </div>
               )
             }

@@ -1,13 +1,38 @@
 import React, { Fragment } from "react"
 import DropZoneContainer from "./DropZoneContainer"
-import { Listbox, Transition } from "@headlessui/react"
+import { Listbox, Popover, Transition } from "@headlessui/react"
 import SidebarContainer from "./SidebarContainer"
 
-const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImages, pickLastImages, removeCurrentImage, removeLastImages, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
+const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, handleTempChange, changeGeminiModel, handleCurrentPromptChange, handleLastPromptChange, pickCurrentImages, takeScreenshot, pickLastImages, removeCurrentImage, removeLastImages, generatePrompt, regeneratePrompt, stopPrompt, onEditHandler, onCancelHandler, toggleSidebar, searchHandler, sortHandler, closeSidebar, deleteAllPrompts, deleteSelectedPrompt }) => (
   <article className="flex flex-auto flex-col h-[60vh] lg:h-full bg-cyan-100 dark:bg-gray-800 duration-200">
     <section className="flex flex-nowrap items-center justify-between w-full border-b border-b-cyan-900 dark:border-b-white py-0.5 overflow-x-auto">
       <h5 className="px-1 text-cyan-900 dark:text-white">{t('prompt_generator')}</h5>
-      <p className="grow align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5">{t('select_model')} </p>
+      <div className="grow hidden sm:inline-flex flex-nowrap items-center">
+        <label className="grow align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
+        <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-1/3 mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
+        <span className="mr-1 px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
+      </div>
+      <Popover className={"inline-block sm:hidden ml-auto px-0.5 duration-200"}>
+        <Popover.Button className={"flex items-center justify-center pl-1 py-1 bg-cyan-200 dark:bg-gray-500 hover:bg-cyan-900/25 active:bg-cyan-900/50 dark:hover:bg-white/50 dark:active:bg-white/25 focus-visible:ring focus-visible:ring-cyan-500/50 focus-visible:ring-offset-1 rounded-md shadow-md dark:shadow-white/50 duration-200"}>
+          <span className="px-0.5 text-xs text-cyan-900 dark:text-white">{(state.temperature * 0.1).toFixed(1)}</span>
+          <img className="h-5 object-contain invert dark:invert-0 duration-200" src={`${import.meta.env.BASE_URL}images/expand-icon.svg`} alt="Expand" />
+        </Popover.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-300"
+          enterFrom="transform opacity-0 scale-95 -translate-y-1/4"
+          enterTo="transform opacity-100 scale-100 translate-y-0"
+          leave="transition ease-in duration-200"
+          leaveFrom="transform opacity-100 scale-100 translate-y-0"
+          leaveTo="transform opacity-0 scale-95 -translate-y-1/4"
+        >
+          <Popover.Panel className={"absolute flex flex-nowrap items-center z-10 mt-1 p-2 w-fit right-1/3 origin-top-right rounded-md bg-cyan-200/50 dark:bg-gray-500/50 shadow-md dark:shadow-white/50 backdrop-blur-sm duration-200"}>
+            <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
+            <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-fit mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
+          </Popover.Panel>
+        </Transition>
+      </Popover>
+      <span className="hidden sm:inline-block align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5">{t('select_model')} </span>
       <Listbox value={state.selectedModel?.variant} onChange={changeGeminiModel} className="w-max px-0.5 text-cyan-900 dark:text-white overflow-x-hidden duration-200">
         <div className="max-w-full overflow-x-hidden">
           <div className="btn-container flex flex-nowrap items-center px-1">
@@ -26,7 +51,7 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGemi
             leaveFrom="transform opacity-100 scale-100 translate-y-0"
             leaveTo="transform opacity-0 scale-95 -translate-y-1/4"
           >
-            <Listbox.Options className="absolute max-h-96 flex flex-col items-center bg-cyan-100/50 dark:bg-gray-700/50 origin-top-right right-0 lg:right-1/2 mt-1 mr-2 p-1 ring-1 ring-cyan-900/50 dark:ring-white/50 backdrop-blur-sm rounded-md shadow-md dark:shadow-white/50 overflow-y-auto z-10">
+            <Listbox.Options className="absolute max-h-96 flex flex-col items-center bg-cyan-100/50 dark:bg-gray-700/50 origin-top-right right-0 lg:right-1/2 mt-1 mr-2 p-1 ring-1 ring-cyan-900/50 dark:ring-white/50 backdrop-blur-sm rounded-md shadow-md dark:shadow-white/50 overflow-y-auto z-20">
               {state.geminiAIModels.map(model => (
                 <Listbox.Option
                   key={model.variant}
@@ -101,10 +126,16 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, changeGemi
           />
           <div className="flex items-center justify-between w-full pt-1">
             <label title="Upload Images" htmlFor="image-picker" className="btn-import hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 cursor-pointer p-2 duration-200 rounded-full">
-              <input className="hidden" type="file" id="image-picker" accept="image/*" multiple max={10} onChange={(e) => pickCurrentImages(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal'} />
+              <input className="hidden" type="file" id="image-picker" accept="image/*" multiple max={10} onChange={(e) => pickCurrentImages(e.target.files)} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal' || state.currentImgURLs?.length >= 10} />
               <img className="dark:hidden object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon.svg`} alt="Import Image" />
               <img className="hidden dark:block object-contain w-10" src={`${import.meta.env.BASE_URL}images/import-image-icon-dark.svg`} alt="Import Image" />
             </label>
+            {navigator.mediaDevices && innerWidth > 640 &&
+              <button title="Screen Capture" className="btn-screenshot hover:bg-cyan-100 dark:hover:bg-gray-700 active:bg-cyan-300 dark:active:bg-gray-500 p-2 duration-200 rounded-full" onClick={takeScreenshot} disabled={state.isGenerating || state.isLoading || state.selectedModel?.input !== 'multimodal' || state.currentImgURLs?.length >= 10}>
+                <img className="dark:hidden object-contain w-10" src={`${import.meta.env.BASE_URL}images/screenshot-icon.svg`} alt="Screen Capture" />
+                <img className="hidden dark:block object-contain w-10" src={`${import.meta.env.BASE_URL}images/screenshot-icon-dark.svg`} alt="Screen Capture" />
+              </button>
+            }
             <textarea onChange={handleCurrentPromptChange} placeholder={t('create_new_prompt')} value={state.currentPrompt} rows="2" className="grow border border-cyan-700 dark:border-gray-200 bg-white dark:bg-black w-full mx-2 p-2 text-black dark:text-white rounded-md md:rounded-lg duration-200" disabled={state.isGenerating || state.isLoading} required></textarea>
             {
               state.isGenerating
