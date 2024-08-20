@@ -43,7 +43,7 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, tempSettin
             <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-fit mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
             <img
               ref={tempSettingInfoRef}
-              className="dark:invert max-h-5 ml-auto p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
+              className="dark:invert max-h-6 p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
               src="images/info-icon.svg"
               alt="Info"
               onMouseEnter={event => showTempSettingInfo(event, true)}

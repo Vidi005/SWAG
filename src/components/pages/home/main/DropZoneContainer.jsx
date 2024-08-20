@@ -50,7 +50,7 @@ const DropZoneContainer = ({ t, isLoading, isGenerating, genAIInput, pickCurrent
                     </div>
                   ))}
                   {currentImgURLs.length < 10 && (
-                    <div className="dropzone grow h-full min-w-max border-2 border-dashed border-cyan-700 dark:border-gray-300 grid items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
+                    <div className="dropzone hidden sm:grid grow h-full min-w-max border-2 border-dashed border-cyan-700 dark:border-gray-300 items-center justify-center p-2 rounded-lg duration-200" {...getRootProps()}>
                       <h3 className="font-normal text-lg text-center text-cyan-900 dark:text-gray-100">{t('drop_image')}</h3>
                     </div>
                   )}
