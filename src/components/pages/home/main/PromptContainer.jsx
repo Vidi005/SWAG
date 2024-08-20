@@ -20,7 +20,7 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, tempSettin
           ref={tempSettingContentInfoRef}
           className="hidden absolute border-2 border-cyan-900 dark:border-white w-1/5 p-1.5 text-sm text-white dark:shadow-white/50 backdrop-blur-sm bg-cyan-700/50 dark:bg-gray-500/50 rounded-md shadow z-10 animate__animated animate__fadeIn animate__faster"
         >{t("temp_setting_info")}</p>
-        <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
+        <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right whitespace-nowrap px-0.5" htmlFor="temp-input">{t('randomness')} </label>
         <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-1/3 mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
         <span className="mr-1 px-0.5 text-xs md:text-sm text-cyan-900 dark:text-white"><strong>{(state.temperature * 0.1).toFixed(1)}</strong></span>
       </div>
@@ -39,11 +39,11 @@ const PromptContainer = ({ t, isDataWillBeSaved, state, fileInputRef, tempSettin
           leaveTo="transform opacity-0 scale-95 -translate-y-1/4"
         >
           <Popover.Panel className={"absolute flex flex-nowrap items-center z-10 mt-1 p-2 w-fit right-1/3 origin-top-right rounded-md bg-cyan-200/50 dark:bg-gray-500/50 shadow-md dark:shadow-white/50 backdrop-blur-sm duration-200"}>
-            <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right px-0.5" htmlFor="temp-input">{t('randomness')} </label>
+            <label className="align-middle text-cyan-900 dark:text-white text-xs md:text-sm text-right whitespace-nowrap px-0.5" htmlFor="temp-input">{t('randomness')} </label>
             <input type="range" id="temp-input" name="temp-input" value={state.temperature} min="0" max="20" onChange={handleTempChange} className="w-fit mx-1 px-0.5 accent-cyan-900 dark:accent-white duration-200" />
             <img
               ref={tempSettingInfoRef}
-              className="dark:invert max-h-6 p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
+              className="dark:invert h-6 p-0.5 object-contain object-center hover:bg-cyan-900/25 dark:hover:bg-gray-500 duration-200 rounded-full overflow-hidden"
               src="images/info-icon.svg"
               alt="Info"
               onMouseEnter={event => showTempSettingInfo(event, true)}
