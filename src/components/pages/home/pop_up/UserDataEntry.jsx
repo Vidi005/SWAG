@@ -38,7 +38,7 @@ const UserDataEntry = ({ t, inputRef, isUserDataEntered, isFocused, isDataWillBe
                 : <label className="w-full pl-1 text-justify leading-tight text-sm text-cyan-800 dark:text-cyan-500 duration-200" htmlFor="input-title">{charsLimit}</label>
               : <label className="text-sm text-transparent">_</label>}
             <br />
-            <div className="input-api-key flex items-center border border-cyan-800 dark:border-gray-100 bg-cyan-50/25 dark:bg-gray-900/25 w-full text-base text-black dark:text-white rounded-md shadow-inner dark:shadow-white/50">
+            <div className="input-api-key flex items-center border border-cyan-800 dark:border-gray-100 bg-cyan-50/25 dark:bg-gray-900/25 w-full text-base text-black dark:text-white rounded-md shadow-inner duration-200 dark:shadow-white/50">
               <input
                 type={inputType}
                 className="input-api-key w-full m-0.5 p-1.5 border border-cyan-800 dark:border-gray-100 bg-cyan-50/25 dark:bg-gray-900/25 text-base text-black dark:text-white rounded-md shadow-inner dark:shadow-white/50 duration-200"

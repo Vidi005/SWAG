@@ -5,7 +5,7 @@ import MainContainer from './main/MainContainer'
 import FooterContainer from './footer/FooterContainer'
 
 const HomePage = ({ t, state, changeLanguage, setDisplayMode, handleNameChange, handleApiKeyChange, onFocusHandler, onBlurHandler, changeVisibilityPassword, changeUserDataSetting, saveUserData, resetUserData }) => (
-  <div className="home-page h-screen w-full flex flex-col bg-cyan-100 dark:bg-black animate__animated animate__fadeIn">
+  <div className="home-page h-screen w-full flex flex-col bg-cyan-100 dark:bg-black duration-200 animate__animated animate__fadeIn">
     <Helmet>
       <meta name="keywords" content="SWAG" />
     </Helmet>

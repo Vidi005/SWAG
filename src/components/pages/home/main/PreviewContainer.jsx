@@ -47,14 +47,14 @@ const PreviewContainer = ({ t, iframeRef, isLoading, isGenerating, responseResul
   } else if (responseResult.includes('<html')) {
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200">
-        <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 overflow-x-auto">
-          <h5 className="px-1 text-black dark:text-white">{t('web_preview_title')}</h5>
+        <section className="flex flex-nowrap items-center justify-between border-b border-b-black dark:border-b-white py-0.5 duration-200 overflow-x-auto">
+          <h5 className="px-1 text-black dark:text-white duration-200">{t('web_preview_title')}</h5>
           <div className="flex items-center px-1 text-cyan-900 dark:text-gray-50 duration-200">
             {
               isGenerating
                 ? (
                     <React.Fragment>
-                      <div className="border-t-2 border-r-2 border-t-cyan-900 border-r-cyan-900 dark:border-t-white dark:border-r-white w-5 h-5 m-1 animate-spin rounded-full"></div>
+                      <div className="border-t-2 border-r-2 border-t-cyan-900 border-r-cyan-900 dark:border-t-white dark:border-r-white w-5 h-5 m-1 animate-spin rounded-full duration-200"></div>
                       <p className="px-2 text-xs">{t('generating')}</p>
                     </React.Fragment>
                   )
@@ -89,8 +89,8 @@ const PreviewContainer = ({ t, iframeRef, isLoading, isGenerating, responseResul
   } else {
     return (
       <article className="flex flex-col h-[60vh] lg:h-full bg-white dark:bg-black duration-200">
-        <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white">{t('web_preview_title')}</h5>
-        <p className="grow grid items-center justify-center w-full text-center text-black dark:text-white">{responseResult}</p>
+        <h5 className="border-b border-b-black dark:border-b-white p-1 text-black dark:text-white duration-200">{t('web_preview_title')}</h5>
+        <p className="grow grid items-center justify-center w-full text-center text-black dark:text-white duration-200">{responseResult}</p>
       </article>
     )
   }
