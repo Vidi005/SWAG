@@ -68,10 +68,12 @@ class MainContainer extends React.Component {
         })
       }, 10)
     })
-    addEventListener('beforeunload', () => {
-      this.onUnloadPage.bind(this)
-      localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
-    })
+    if (this.state.currentPrompt.length > 0) {
+      addEventListener('beforeunload', () => {
+        this.onUnloadPage.bind(this)
+        localStorage.removeItem(this.state.TEMP_WEB_PREVIEW_STORAGE_KEY)
+      })
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -83,10 +85,11 @@ class MainContainer extends React.Component {
     if (prevProps.t('sort_chunked_prompts.0') !== this.props.t('sort_chunked_prompts.0')) {
       this.setState({ sortBy: this.props.t('sort_chunked_prompts.0') })
     }
-    if (prevState.isLoading && !this.state.isLoading || prevState.isGenerating && !this.state.isGenerating) {
-      removeEventListener('beforeunload', () => this.onUnloadPage)
-    } else if (!prevState.isLoading && this.state.isLoading || !prevState.isGenerating && this.state.isGenerating) {
-      addEventListener('beforeunload', () => this.onUnloadPage)
+    if (!this.state.isLoading || !this.state.isGenerating) {
+      removeEventListener('beforeunload', this.onUnloadPage)
+    }
+    if (this.state.isLoading || this.state.isGenerating || this.state.currentPrompt.length > 0 || this.state.isEditing) {
+      addEventListener('beforeunload', this.onUnloadPage)
     }
   }
 
