@@ -74,7 +74,7 @@ const SidebarContainer = ({ t, isSidebarOpened, sortBy, sortHandler, chunkedProm
           {chunkedPrompts.map(chunk => (
             <div key={chunk.id} className="group grid grid-flow-col items-center justify-between my-1 hover:bg-cyan-500/50 dark:hover:bg-gray-200/50 rounded-md duration-300 animate__animated animate__fadeInLeft animate__faster">
               <Link to={`/prompt?id=${chunk.id}`} className="text-base text-cyan-900 dark:text-white truncate p-1.5 duration-200" onClick={closeSidebar}>{chunk.promptChunk}</Link>
-              <span className="h-8 w-8 aspect-square p-1 lg:group-hover:hidden"></span>
+              <span className="hidden lg:inline-block h-8 w-8 aspect-square p-1 lg:group-hover:hidden"></span>
               <button title="Delete this prompt" className="lg:hidden lg:group-hover:block inline-flex items-center justify-center h-8 w-8 p-1.5 hover:bg-red-500 dark:hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-black/75 focus-visible:dark:ring-white/75 rounded-md duration-200" onClick={() => deleteSelectedPrompt(chunk.id)}>
                 <img className="object-contain h-full w-full" src={`${import.meta.env.BASE_URL}images/delete-icon.svg`} alt="Delete this prompt" />
               </button>
