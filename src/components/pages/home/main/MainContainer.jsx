@@ -663,22 +663,16 @@ class MainContainer extends React.Component {
 
   saveUserPromptData() {
     if (isStorageExist(this.props.t('browser_warning')) && (this.state.savedApiKey || this.props.state.isDataWillBeSaved)) {
-      this.setState({ promptId: +new Date() }, () => {
-        const chunkedPromptsData = this.state.chunkedPromptsData.map(chunkedPrompt => ({ ...chunkedPrompt }))
-        let chunkedPrompt = this.state.lastPrompt
-        if (this.state.lastPrompt.length > 50) chunkedPrompt = `${this.state.lastPrompt.slice(0, 50)}...`
-        const foundChunkedPrompt = chunkedPromptsData.find(chunkedPrompt => chunkedPrompt.id === getUserPrompt())
-        if (foundChunkedPrompt) {
-          chunkedPromptsData[chunkedPromptsData.indexOf(foundChunkedPrompt)] = {
-            id: foundChunkedPrompt.id,
-            promptChunk: chunkedPrompt,
-            updatedAt: new Date().toISOString()
-          }
-        } else chunkedPromptsData.push({
-          id: this.state.promptId,
+      const chunkedPromptsData = this.state.chunkedPromptsData.map(chunkedPrompt => ({ ...chunkedPrompt }))
+      let chunkedPrompt = this.state.lastPrompt
+      if (this.state.lastPrompt.length > 50) chunkedPrompt = `${this.state.lastPrompt.slice(0, 50)}...`
+      const foundChunkedPrompt = chunkedPromptsData.find(chunkedPrompt => chunkedPrompt.id === getUserPrompt())
+      if (foundChunkedPrompt) {
+        chunkedPromptsData[chunkedPromptsData.indexOf(foundChunkedPrompt)] = {
+          id: foundChunkedPrompt.id,
           promptChunk: chunkedPrompt,
-          updatedAt: (new Date()).toISOString()
-        })
+          updatedAt: new Date().toISOString()
+        }
         chunkedPromptsData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
         localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(chunkedPromptsData))
         if (this.loadAllPrompts() !== null) {
@@ -700,7 +694,36 @@ class MainContainer extends React.Component {
             confirmButtonText: this.props.t('ok')
           })
         }
-      })
+      } else {
+        this.setState({ promptId: +new Date() }, () => {
+          chunkedPromptsData.push({
+            id: this.state.promptId,
+            promptChunk: chunkedPrompt,
+            updatedAt: (new Date()).toISOString()
+          })
+          chunkedPromptsData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+          localStorage.setItem(this.state.CHUNKED_PROMPTS_STORAGE_KEY, JSON.stringify(chunkedPromptsData))
+          if (this.loadAllPrompts() !== null) {
+            const userPromptsData = this.loadAllPrompts().map(userPrompt => ({ ...userPrompt }))
+            const foundUserPrompt = userPromptsData.find(userPrompt => userPrompt.id === getUserPrompt())
+            if (foundUserPrompt) {
+              userPromptsData[userPromptsData.indexOf(foundUserPrompt)] = {
+                id: foundUserPrompt.id,
+                prompt: this.state.lastPrompt
+              }
+            } else userPromptsData.push({ id: this.state.promptId, prompt: this.state.lastPrompt })
+            localStorage.setItem(this.state.USER_PROMPTS_STORAGE_KEY, JSON.stringify(userPromptsData))
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: this.props.t('add_prompt_fail.0'),
+              text: this.props.t('add_prompt_fail.1'),
+              confirmButtonColor: 'blue',
+              confirmButtonText: this.props.t('ok')
+            })
+          }
+        })
+      }
     }
   }
 
