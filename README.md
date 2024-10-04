@@ -39,6 +39,7 @@ Before using this web app, please follow the steps below.
 - Generate static websites from both text prompts and image file inputs.
 - Dark mode support.
 - Localization support (currently available in English and Indonesian).
+- Configure AI temperature (randomness) response.
 - Select Gemini AI Models.
 - Prompt history sidebar (available when the "Save all user data to browser" checkbox is selected).
 - Edit the last user input prompt.
