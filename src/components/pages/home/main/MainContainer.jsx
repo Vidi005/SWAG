@@ -25,7 +25,7 @@ class MainContainer extends React.Component {
       savedApiKey: localStorage.getItem('USER_API_STORAGE_KEY'),
       temperature: 10,
       geminiAIModels: geminiAIModels,
-      selectedModel: geminiAIModels[1],
+      selectedModel: geminiAIModels[0],
       isLoading: false,
       isEditing: false,
       isGenerating: false,

@@ -207,6 +207,7 @@ class App extends React.Component {
         <Helmet>
           <title>{i18n.t('app_name')}</title>
           <meta name="description" content={i18n.t('app_description')} />
+          <meta name="dicoding:email" content="vidihidarlan@gmail.com"></meta>
           <link rel="canonical" href={location.toString()} />
         </Helmet>
         <Routes>
